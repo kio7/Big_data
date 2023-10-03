@@ -1,9 +1,11 @@
 from flask import render_template, redirect, url_for, flash
 from forms import FileForm
 
-from werkzeug.utils import secure_filename
-import uuid
+# Other imports
+from sklearn.decomposition import PCA, IncrementalPCA
+from matplotlib.image import imread, imsave
 import os
+
 
 from baseconfig import app
 
@@ -17,14 +19,33 @@ def index():
 def clustering():
     form = FileForm()
     if form.submit.data and form.validate():
-        file_name = secure_filename(form.file_url.data.filename)
-        file_name = str(uuid.uuid1()) + "_" + file_name
-        form.file_url.data.save(os.path.join(app.config["UPLOAD_FOLDER"], file_name))
+        image = form.file_dump.data
         
-        flash("File uploaded!", "success")
-        return redirect(url_for("clustering"))
+        img_raw = imread(image)
 
-    return render_template("clustering.html", form=form)
+        # img_sum = img_raw.sum(axis=2)
+        # img_bw = img_sum/img_sum.max()
+
+        # pca = PCA()
+        # pca.fit(img_bw)
+
+        # # getting cumulative variance
+        # var_cumu = np.cumsum(pca.explained_variance_ratio_)*100
+
+        # # how many PCs explain 95% of the ratio ?
+        # k = np.argmax(var_cumu>95)
+
+        # ipca = IncrementalPCA(n_components=k)
+        # img_recon = ipca.inverse_transform(ipca.fit_transform(img_bw))
+
+        file_path = f"{app.config['UPLOAD_FOLDER']}/{image.filename}"
+        imsave(file_path, img_raw)
+    
+
+        flash("Sending picture")
+        return render_template("clustering.html", form=form, picture_src=file_path)
+
+    return render_template("clustering.html", form=form, picture_src='')
 
 
 @app.route("/segmentation", methods=["POST", "GET"])

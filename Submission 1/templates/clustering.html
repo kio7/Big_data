@@ -10,9 +10,13 @@
     <form method="POST" novalidate enctype="multipart/form-data">
         {{ form.csrf_token() }}
         {{ form.title(class='form-control') }}
-        {{ form.file_url(class='form-control') }}
+        {{ form.file_dump(class='form-control') }}
         {{ form.submit(class='btn btn-success mt-2') }}
     </form>
 </div>
+
+{% if picture_src != '' %}
+    <img src="{{ picture_src }}" alt="Nope">
+{% endif %}
 
 {% endblock %}

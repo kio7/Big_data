@@ -1,6 +1,7 @@
 - A Clustering of Data: Bruk forskjellige datasett (bilder, lyd, tilfeldige data og andre data) for å lage clustering av disse datasettene. 
-Bruk PCA og vis og visualiser resultatene dine. 
+Bruk PCA. Vis og visualiser resultatene dine.
 Opprett en webside eller GUI applikasjon som kan bruke forskjellige datasett som input og skaper gruppert outputdata. (20 poeng)
+
 
 - B Segmentation: Bruk Thresholding, Region Growing og Watershed Segmentation Algoritmer for forskjellige datasett og vis fordeler og ulemper med disse algoritmene. 
 Lag en presenatsjion av de algoritmer og forklar koden og dine resultater. 
