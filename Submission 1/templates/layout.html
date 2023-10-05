@@ -14,16 +14,33 @@
 </head>
 
 <body>
-
-    {% block body %}{% endblock %}
-
+    <div class="container-md text-center">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col-6 text-left">
     
-    <!-- Flash messages -->    
-    {% for category, message in get_flashed_messages(with_categories=true) %}
-        <div class="alert {{ category }}">
-            {{ message }}
+
+
+                {% block body %}{% endblock %}
+
+                
+                <!-- Flash messages -->    
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <hr>
+                <p class="text-center small">by 42 4F 44 C3 98 - 2023</p>
+            </div>
+            <div class="col"></div>
         </div>
-    {% endfor %}
+    </div>
+    
+
+
+
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
