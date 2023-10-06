@@ -1,3 +1,21 @@
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #3f3f3f;
+        color: white;
+    }
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+hr {
+    display: block;
+    border-top: white solid 1px;
+    color: rgb(255, 255, 255);
+}
+
 .form-control {
     margin: 0rem;
     width: 18rem;

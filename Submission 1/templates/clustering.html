@@ -2,28 +2,36 @@
 {% block title %}Clustering{% endblock %}
 {% block body %}
 
+
 <h1>Clustering</h1>
-<a class="btn btn-lg btn-primary mt-3 ml-3" href="{{ url_for('index') }}">Home</a>
-<p>Upload a .png file to view the distribution of colors in the image (histogram). This is an example of using clustering with images as a dataset.</p>
+<hr>
+<p></p>
 
 <div class="mt-3 ml-3">
     <form method="POST" novalidate enctype="multipart/form-data">
         {{ form.csrf_token() }}
-
-        {{ form.file_dump(class='form-control') }}
+        <p>Choose dataset:</p>
+        {{ form.folder(class='form-control') }}
         {{ form.submit(class='btn btn-success mt-2') }}
     </form>
 </div>
+
+
+
 
 {% if uri_original != '' %}
     <h4>Original image</h4>
     <img width="100%" src="{{ uri_original }}" alt="Nope">
 {% endif %}
 
-{% for img in cluster_images %}
-<img src="{{ img }}" alt="Håp">
 
-{% endfor %}
+
+{% if cluster_images != '' %}
+    {% for image in cluster_images %}
+        <img width="100%" src="{{ image }}" alt="Nopy">
+    {% endfor %}
+{% endif %}
+
 
 
 {% endblock %}

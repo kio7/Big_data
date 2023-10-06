@@ -17,9 +17,13 @@
     <div class="container-md text-center">
         <div class="row">
             <div class="col"></div>
-            <div class="col-6 text-left">
-    
-
+            <div class="col-8 text-left">
+                <div class="text-center">
+                    <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('index') }}">Home</a>
+                    <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('clustering') }}">Clustering</a>
+                    <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('segmentation') }}">Segmentation</a>
+                    <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('risikoanalyse') }}">Risikoanalyse</a>
+                </div>
 
                 {% block body %}{% endblock %}
 
