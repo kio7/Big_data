@@ -1,50 +1,28 @@
 import numpy as np
 
-def region_growing(image, seed, threshold):
-    height, width = image.shape
-    visited = np.zeros_like(image)
-    region = np.zeros_like(image)
-
+def region_growing(img, seed, threshold):
+    rows, cols = img.shape
+    visited = np.zeros_like(img)
+    region = np.zeros_like(img)
     stack = []
     stack.append(seed)
 
-    # Define connectivity (4 or 8 neighbors)
-    connectivity = 4
-
     while len(stack) > 0:
-        c_p = stack.pop()
+        pixel = stack.pop()
+        x, y = pixel
 
-        if (
-            c_p[0] >= 0
-            and c_p[1] >= 0
-            and c_p[0] < height
-            and c_p[1] < width
-        ):
-            if visited[c_p[0], c_p[1]] == 0:
-                if abs(int(image[c_p]) - int(image[seed])) < threshold:
-                    region[c_p] = image[c_p]
-                    visited[c_p] = 255
+        if x < 0 or y < 0 or x >= rows or y >= cols:
+            continue
 
-                    if connectivity == 4:
-                        neighbors = [
-                            (c_p[0] - 1, c_p[1]),
-                            (c_p[0] + 1, c_p[1]),
-                            (c_p[0], c_p[1] - 1),
-                            (c_p[0], c_p[1] + 1),
-                        ]
-                    elif connectivity == 8:
-                        neighbors = [
-                            (c_p[0] - 1, c_p[1]),
-                            (c_p[0] + 1, c_p[1]),
-                            (c_p[0], c_p[1] - 1),
-                            (c_p[0], c_p[1] + 1),
-                            (c_p[0] - 1, c_p[1] - 1),
-                            (c_p[0] - 1, c_p[1] + 1),
-                            (c_p[0] + 1, c_p[1] - 1),
-                            (c_p[0] + 1, c_p[1] + 1),
-                        ]
+        if visited[x, y] == 1:
+            continue
 
-                    for neighbor in neighbors:
-                        stack.append(neighbor)
+        if abs(int(img[x, y]) - int(img[seed])) <= threshold:  # Threshold, adjust as needed
+            region[x, y] = img[x, y]
+            visited[x, y] = 1
+            stack.append((x - 1, y))
+            stack.append((x + 1, y))
+            stack.append((x, y - 1))
+            stack.append((x, y + 1))
 
-    return region
+    return region 

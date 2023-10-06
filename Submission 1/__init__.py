@@ -11,6 +11,7 @@ from Region_growing import region_growing
 
 # import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
@@ -39,11 +40,9 @@ def load_images_segmentation(img_path):
     img_path = os.path.dirname(__file__) + img_path
     if img_path.endswith(".jpg"):
         img = cv2.imread(img_path)
-        if img is not None:
-            # Resize the image to a common size if needed
-            # img = cv2.resize(img, (200, 100))
-            # img = img.reshape(-1)
-            return img
+        gray = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        if img is not None and gray is not None:
+            return img, gray
 
 
 def decode_img(form_data: FileForm) -> list:
@@ -116,49 +115,49 @@ def segmentation():
     form = ChoosePictureForm()
     if form.submit.data and form.validate():
         # Folder path where pictures are stored
-        picture = form.picture.data
-        picture_data, filenames = load_images_from_folder(f"/static/photos/segmentation/{picture}")
-        num_pictures = len(filenames)
+        picture_name = form.picture.data
+        img_thres, gray = load_images_segmentation(f"/static/photos/segmentation/{picture_name}")
 
-        
+        plt.switch_backend('agg')
         
         # Region growing
         # Seed point is in the middle of the picture.
-        seed_point = (picture_data.shape[0]/2, picture_data.shape[1]/2)
-        threshold = 55
-        img_region_grow = region_growing(picture_data, seed_point, threshold)
+        seed_point = (gray.shape[0]//2, gray.shape[1]//2)
+        threshold = 80
+        img_region_grow = region_growing(gray, seed_point, threshold)
+        plt.imshow(img_region_grow)
+        buf = BytesIO()
+        plt.savefig(buf)
+        data = b64encode(buf.getvalue()).decode('utf-8')
+        img_rg = f"data:image/png;base64,{data}"
+
 
         # Thresholding
-        img_thres = cv2.adaptiveThreshold(picture_data, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        img_blured = cv2.medianBlur(gray, 5)
+        img_thres = cv2.adaptiveThreshold(img_blured, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        plt.imshow(img_thres)
+        buf2 = BytesIO()
+        plt.savefig(buf2)
+        data = b64encode(buf2.getvalue()).decode('utf-8')
+        img_thres = f"data:image/png;base64,{data}"
+
 
         # Watershed
-        
 
-        
-        fig = Figure(figsize= (16, 9))
-        plot = fig.subplots(nrows=3, ncols=3)
-        for i in range(num_pictures):
-            plot
-    
 
-        plot.set_title("Segmentation")
-        # plot.legend()
-    
 
-        buf = BytesIO()
-        fig.savefig(buf, format="png")
-        data = b64encode(buf.getvalue()).decode('utf-8')
-        plot_image = f"data:image/png;base64,{data}"
 
         return render_template(
-            "clustering.html", 
-            form=form,  
-            plot_image = plot_image,
-            filenames = filenames
+            "segmentation.html", 
+            form=form,
+            flag=True,
+            picture_name=picture_name,
+            img_rg=img_rg,
+            img_thres=img_thres,
             )
 
 
-    return render_template("segmentation.html", form=form, plot_image='')
+    return render_template("segmentation.html", form=form, flag=False)
 
 
 @app.route("/risikoanalyse", methods=["POST", "GET"])

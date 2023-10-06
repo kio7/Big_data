@@ -15,8 +15,13 @@
     </form>
 </div>
 
-{% if plot_image != '' %}
-    <img width="100%" src="{{ plot_image }}" alt="Nope">
+{% if flag == True %}
+    <!-- Originals -->
+    <img width="100%" src="{{ url_for('static', filename='photos/segmentation/' + picture_name) }}" alt="Nope">
+
+    <!-- Edited -->
+    <img width="100%" src="{{ img_rg }}" alt="Nope">
+    <img width="100%" src="{{ img_thres }}" alt="Nope">
 {% endif %}
 
 {% endblock %}
