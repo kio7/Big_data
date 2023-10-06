@@ -10,20 +10,35 @@
 <div class="mt-3 ml-3">
     <form method="POST" novalidate enctype="multipart/form-data">
         {{ form.csrf_token() }}
-        <p>Choose dataset:</p>
-        {{ form.folder(class='form-control') }}
-        {{ form.submit(class='btn btn-success mt-2') }}
+            <div class="row">
+                <div class="col">
+                    <label for="folder">Choose dataset:</label>
+                    {{ form.folder(class='form-control') }}
+                </div>
+                <div class="col">
+                    <label for="clusters">Select no. of clusters</label>
+                    {{ form.clusters(class='form-control') }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{ form.submit(class='btn btn-success mt-2') }}
+                </div>
+            </div>
+
     </form>
 </div>
 
 
 {% if plot_image != '' %}
-    <img width="100%" src="{{ plot_image }}" alt="Nopy">
-
-
+    
+    <label>Dataset:</label><br \>
     {% for file in filenames %}
-        <img src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="">
+    <img class="thumbnails" src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="">
     {% endfor %}
+
+    
+    <img class="plot" width="100%" src="{{ plot_image }}" alt="Nopy">
 
 {% endif %}
 

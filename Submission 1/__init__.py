@@ -52,10 +52,13 @@ def index():
 @app.route("/clustering", methods=["POST", "GET"])
 def clustering():
     form = FileForm()
+    form.clusters.default = 3
     if form.submit.data and form.validate():
     
         # Folder path where JPG pictures are stored
         folder = form.folder.data
+        clusters = form.clusters.data
+        print(clusters)
         data, filenames = load_images_from_folder(f"/static/photos/clustering/{folder}")
         
         # Apply PCA to reduce dimensionality
@@ -64,7 +67,7 @@ def clustering():
         data_pca = pca.fit_transform(data)
 
         # Perform clustering (K-Means in this example)
-        num_clusters = 5  # You can adjust the number of clusters
+        num_clusters = clusters  # You can adjust the number of clusters
         kmeans = KMeans(n_clusters=num_clusters)
         labels = kmeans.fit_predict(data_pca)
 
@@ -72,7 +75,8 @@ def clustering():
 
         fig = Figure(figsize= (8, 6))
         plot = fig.subplots()
-        colors = ["r", "b", "g", "c", "m"]
+        
+        colors = ["r", "b", "g", "c", "m", "y", "k", "#FF00FF"]
         for i in range(num_clusters):
             plot.scatter(data_pca[labels == i, 0], data_pca[labels == i, 1], c=colors[i % len(colors)], label=f"Cluster {i+1}")
 
