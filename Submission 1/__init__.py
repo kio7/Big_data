@@ -8,8 +8,8 @@ from forms import FileForm
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
-import matplotlib.pyplot as plt
-# from matplotlib.figure import Figure
+# import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 import numpy as np
 import cv2
 
@@ -54,45 +54,47 @@ def clustering():
     form = FileForm()
     if form.submit.data and form.validate():
     
-        folder = form.folder.data
-        data, names = load_images_from_folder(f"/static/photos/clustering/{folder}")
-
         # Folder path where JPG pictures are stored
-        folder_path = "bilder"
-        data, names = load_images_from_folder(folder_path)
-
+        folder = form.folder.data
+        data, filenames = load_images_from_folder(f"/static/photos/clustering/{folder}")
+        
         # Apply PCA to reduce dimensionality
-        num_components = len(names)  # You can adjust this number based on your needs
+        num_components = len(filenames)  # You can adjust this number based on your needs
         pca = PCA(n_components=num_components)
         data_pca = pca.fit_transform(data)
 
         # Perform clustering (K-Means in this example)
-        num_clusters = 3  # You can adjust the number of clusters
+        num_clusters = 5  # You can adjust the number of clusters
         kmeans = KMeans(n_clusters=num_clusters)
         labels = kmeans.fit_predict(data_pca)
 
         # Visualize the clustered data
-        plt.figure(figsize= (8, 6))
-        colors = ["r", "b", "g"]
+
+        fig = Figure(figsize= (8, 6))
+        plot = fig.subplots()
+        colors = ["r", "b", "g", "c", "m"]
         for i in range(num_clusters):
-            plt.scatter(data_pca[labels == i, 0], data_pca[labels == i, 1], c=colors[i % len(colors)], label=f"Cluster {i+1}")
+            plot.scatter(data_pca[labels == i, 0], data_pca[labels == i, 1], c=colors[i % len(colors)], label=f"Cluster {i+1}")
 
-        plt.title("PCA and K-Means Clustering")
-        plt.legend()
-        plt.xlabel("Principal Component 1")
-        plt.ylabel("Principal Component 2")
+        plot.set_title("PCA and K-Means Clustering")
+        plot.legend()
+        plot.set_xlabel("Principal Component 1")
+        plot.set_ylabel("Principal Component 2")
 
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        data = b64encode(buf.getvalue()).decode('utf-8')
+        plot_image = f"data:image/png;base64,{data}"
 
-        return render_template("clustering.html", form=form, uri_original='', cluster_images = '')
+        return render_template(
+            "clustering.html", 
+            form=form,  
+            plot_image = plot_image,
+            folder = folder,
+            filenames = filenames
+            )
 
-        # image =  decode_img(form.file_dump.data)
-
-        # uri_original = f"data:image/png;base64,{image[1]}"
-
-        # cluster_images = cluster_this(image[0])
-        # return render_template("clustering.html", form=form, uri_original=uri_original, cluster_images=cluster_images)
-
-    return render_template("clustering.html", form=form, uri_original='', cluster_images = '')
+    return render_template("clustering.html", form=form, uri_original='', plot_image = '')
 
 
 

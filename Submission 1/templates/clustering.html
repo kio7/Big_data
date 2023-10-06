@@ -17,20 +17,16 @@
 </div>
 
 
+{% if plot_image != '' %}
+    <img width="100%" src="{{ plot_image }}" alt="Nopy">
 
 
-{% if uri_original != '' %}
-    <h4>Original image</h4>
-    <img width="100%" src="{{ uri_original }}" alt="Nope">
-{% endif %}
-
-
-
-{% if cluster_images != '' %}
-    {% for image in cluster_images %}
-        <img width="100%" src="{{ image }}" alt="Nopy">
+    {% for file in filenames %}
+        <img src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="">
     {% endfor %}
+
 {% endif %}
+
 
 
 
