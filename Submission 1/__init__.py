@@ -38,10 +38,10 @@ def decode_img(form_data: FileForm) -> list:
     img = Image.open(form_data)
     data = BytesIO()
     img.save(data, "PNG")
-    
+
     encoded_img = b64encode(data.getvalue())
-    decoded_img = encoded_img.decode('utf-8')
-    
+    decoded_img = encoded_img.decode("utf-8")
+
     return encoded_img, decoded_img
 
 
@@ -49,18 +49,19 @@ def decode_img(form_data: FileForm) -> list:
 def index():
     return render_template("index.html")
 
+
 @app.route("/clustering", methods=["POST", "GET"])
 def clustering():
     form = FileForm()
     form.clusters.default = 3
     if form.submit.data and form.validate():
-    
         # Folder path where JPG pictures are stored
         folder = form.folder.data
         clusters = form.clusters.data
+        show_filenames = form.show_filenames.data
         print(clusters)
         data, filenames = load_images_from_folder(f"/static/photos/clustering/{folder}")
-        
+
         # Apply PCA to reduce dimensionality
         num_components = len(filenames)  # You can adjust this number based on your needs
         pca = PCA(n_components=num_components)
@@ -73,12 +74,25 @@ def clustering():
 
         # Visualize the clustered data
 
-        fig = Figure(figsize= (8, 6))
+        fig = Figure(figsize=(8, 6))
         plot = fig.subplots()
-        
+
         colors = ["r", "b", "g", "c", "m", "y", "k", "#FF00FF"]
         for i in range(num_clusters):
-            plot.scatter(data_pca[labels == i, 0], data_pca[labels == i, 1], c=colors[i % len(colors)], label=f"Cluster {i+1}")
+            cluster_data = data_pca[labels == i]
+            cluster_filenames = [filenames[j] for j in range(len(filenames)) if labels[j] == i]
+
+            if show_filenames:
+                plot.scatter(cluster_data[:, 0], cluster_data[:, 1], c=colors[i % len(colors)], label=f"Cluster {i+1}")
+                for j in range(len(cluster_filenames)):
+                    plot.annotate(cluster_filenames[j], (cluster_data[j, 0], cluster_data[j, 1]))
+            else:
+                plot.scatter(
+                    data_pca[labels == i, 0],
+                    data_pca[labels == i, 1],
+                    c=colors[i % len(colors)],
+                    label=f"Cluster {i+1}",
+                )
 
         plot.set_title("PCA and K-Means Clustering")
         plot.legend()
@@ -87,20 +101,19 @@ def clustering():
 
         buf = BytesIO()
         fig.savefig(buf, format="png")
-        data = b64encode(buf.getvalue()).decode('utf-8')
+        data = b64encode(buf.getvalue()).decode("utf-8")
         plot_image = f"data:image/png;base64,{data}"
 
         return render_template(
-            "clustering.html", 
-            form=form,  
-            plot_image = plot_image,
-            folder = folder,
-            filenames = filenames
-            )
+            "clustering.html",
+            form=form,
+            plot_image=plot_image,
+            folder=folder,
+            filenames=filenames,
+            show_filenames=show_filenames,
+        )
 
-    return render_template("clustering.html", form=form, uri_original='', plot_image = '')
-
-
+    return render_template("clustering.html", form=form, uri_original="", plot_image="")
 
 
 @app.route("/segmentation", methods=["POST", "GET"])
@@ -113,6 +126,5 @@ def risikoanalyse():
     return render_template("risikoanalyse.html")
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)

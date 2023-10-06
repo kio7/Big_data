@@ -20,8 +20,13 @@
                     {{ form.clusters(class='form-control') }}
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-8">
                 <div class="col">
+                    <div class="form-check form-switch">
+                        {{ form.show_filenames(class='form-check-input') }}
+                        <label class="form-check-label" for="show_filenames">Show filenames?</label>
+                    </div>
+
                     {{ form.submit(class='btn btn-success mt-2') }}
                 </div>
             </div>
@@ -33,8 +38,14 @@
 {% if plot_image != '' %}
     
     <label>Dataset:</label><br \>
+
     {% for file in filenames %}
-    <img class="thumbnails" src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="">
+        
+        <img class="thumbnails" src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="{{ file }}">
+        {% if show_filenames %}
+            <label>{{ file }}</label>
+        {% endif %}
+
     {% endfor %}
 
     
