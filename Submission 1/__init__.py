@@ -1,12 +1,13 @@
 import os
-from base64 import b64encode
-from base64 import b64decode
+from base64 import b64encode, b64decode
 from io import BytesIO
 from PIL import Image
 from flask import render_template, redirect, url_for, flash
-from forms import FileForm
+from forms import FileForm, ChoosePictureForm
+
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from Region_growing import region_growing
 
 # import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -32,6 +33,17 @@ def load_images_from_folder(folder_path):
                 dataset.append(img)
                 names.append(filename)
     return np.array(dataset), names
+
+
+def load_images_segmentation(img_path):
+    img_path = os.path.dirname(__file__) + img_path
+    if img_path.endswith(".jpg"):
+        img = cv2.imread(img_path)
+        if img is not None:
+            # Resize the image to a common size if needed
+            # img = cv2.resize(img, (200, 100))
+            # img = img.reshape(-1)
+            return img
 
 
 def decode_img(form_data: FileForm) -> list:
@@ -101,7 +113,52 @@ def clustering():
 
 @app.route("/segmentation", methods=["POST", "GET"])
 def segmentation():
-    return render_template("segmentation.html")
+    form = ChoosePictureForm()
+    if form.submit.data and form.validate():
+        # Folder path where pictures are stored
+        picture = form.picture.data
+        picture_data, filenames = load_images_from_folder(f"/static/photos/segmentation/{picture}")
+        num_pictures = len(filenames)
+
+        
+        
+        # Region growing
+        # Seed point is in the middle of the picture.
+        seed_point = (picture_data.shape[0]/2, picture_data.shape[1]/2)
+        threshold = 55
+        img_region_grow = region_growing(picture_data, seed_point, threshold)
+
+        # Thresholding
+        img_thres = cv2.adaptiveThreshold(picture_data, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
+        # Watershed
+        
+
+        
+        fig = Figure(figsize= (16, 9))
+        plot = fig.subplots(nrows=3, ncols=3)
+        for i in range(num_pictures):
+            plot
+    
+
+        plot.set_title("Segmentation")
+        # plot.legend()
+    
+
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        data = b64encode(buf.getvalue()).decode('utf-8')
+        plot_image = f"data:image/png;base64,{data}"
+
+        return render_template(
+            "clustering.html", 
+            form=form,  
+            plot_image = plot_image,
+            filenames = filenames
+            )
+
+
+    return render_template("segmentation.html", form=form, plot_image='')
 
 
 @app.route("/risikoanalyse", methods=["POST", "GET"])
