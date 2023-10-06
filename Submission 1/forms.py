@@ -11,6 +11,12 @@ class FileForm(FlaskForm):
         if os.path.isdir(os.path.join(os.path.dirname(__file__), f"static/photos/clustering/{folder}"))
     ]
     folder = SelectField("Select a dataset", choices=folder_choices)
+    clusters = SelectField(
+        "Select no. of clusters",
+        choices=[(2, "2"), (3, "3"), (4, "4"), (5, "5"), (6, "6"), (7, "7"), (8, "8")],
+        coerce=int,
+        default=3,
+    )
     show_filenames = BooleanField("Show filenames?")
     submit = SubmitField("Select")
 

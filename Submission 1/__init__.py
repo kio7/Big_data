@@ -64,7 +64,7 @@ def index():
 @app.route("/clustering", methods=["POST", "GET"])
 def clustering():
     form = FileForm()
-    form.clusters.default = 3
+    # form.clusters.default = 3
     if form.submit.data and form.validate():
         # Folder path where JPG pictures are stored
         folder = form.folder.data
@@ -135,19 +135,18 @@ def segmentation():
         picture_name = form.picture.data
         img_thres, gray = load_images_segmentation(f"/static/photos/segmentation/{picture_name}")
 
-        plt.switch_backend('agg')
-        
+        plt.switch_backend("agg")
+
         # Region growing
         # Seed point is in the middle of the picture.
-        seed_point = (gray.shape[0]//2, gray.shape[1]//2)
+        seed_point = (gray.shape[0] // 2, gray.shape[1] // 2)
         threshold = 80
         img_region_grow = region_growing(gray, seed_point, threshold)
         plt.imshow(img_region_grow)
         buf = BytesIO()
         plt.savefig(buf)
-        data = b64encode(buf.getvalue()).decode('utf-8')
+        data = b64encode(buf.getvalue()).decode("utf-8")
         img_rg = f"data:image/png;base64,{data}"
-
 
         # Thresholding
         img_blured = cv2.medianBlur(gray, 5)
@@ -155,24 +154,19 @@ def segmentation():
         plt.imshow(img_thres)
         buf2 = BytesIO()
         plt.savefig(buf2)
-        data = b64encode(buf2.getvalue()).decode('utf-8')
+        data = b64encode(buf2.getvalue()).decode("utf-8")
         img_thres = f"data:image/png;base64,{data}"
-
 
         # Watershed
 
-
-
-
         return render_template(
-            "segmentation.html", 
+            "segmentation.html",
             form=form,
             flag=True,
             picture_name=picture_name,
             img_rg=img_rg,
             img_thres=img_thres,
-            )
-
+        )
 
     return render_template("segmentation.html", form=form, flag=False)
 
