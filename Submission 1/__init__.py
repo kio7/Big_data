@@ -45,17 +45,6 @@ def load_images_segmentation(img_path):
             return img, gray
 
 
-def decode_img(form_data: FileForm) -> list:
-    img = Image.open(form_data)
-    data = BytesIO()
-    img.save(data, "PNG")
-
-    encoded_img = b64encode(data.getvalue())
-    decoded_img = encoded_img.decode("utf-8")
-
-    return encoded_img, decoded_img
-
-
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
@@ -64,13 +53,12 @@ def index():
 @app.route("/clustering", methods=["POST", "GET"])
 def clustering():
     form = FileForm()
-    # form.clusters.default = 3
+
     if form.submit.data and form.validate():
         # Folder path where JPG pictures are stored
         folder = form.folder.data
         clusters = form.clusters.data
         show_filenames = form.show_filenames.data
-        print(clusters)
         data, filenames = load_images_from_folder(f"/static/photos/clustering/{folder}")
 
         # Apply PCA to reduce dimensionality
