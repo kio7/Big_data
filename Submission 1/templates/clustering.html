@@ -7,7 +7,7 @@
 <hr>
 <p></p>
 
-<div class="mt-3 ml-3">
+<div class="mt-3">
     <form method="POST" novalidate enctype="multipart/form-data">
         {{ form.csrf_token() }}
             <div class="row">
@@ -22,8 +22,8 @@
             </div>
             <div class="row mt-8">
                 <div class="col">
-                    <div class="form-check form-switch">
-                        {{ form.show_filenames(class='form-check-input') }}
+                    <div class="form-check">
+                        {{ form.show_filenames(class='form-check-input mt-2') }}
                         <label class="form-check-label" for="show_filenames">Show filenames?</label>
                     </div>
 
@@ -37,7 +37,7 @@
 
 {% if plot_image != '' %}
     <hr>
-    <label>Dataset:</label><br \>
+    <label>Chosen dataset:</label><br \>
 
     <div class="thumbs_container">
         {% for file in filenames %}

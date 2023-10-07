@@ -1,15 +1,15 @@
 import os
-from base64 import b64encode, b64decode
+from base64 import b64encode
 from io import BytesIO
 from PIL import Image
-from flask import render_template, redirect, url_for, flash
+from flask import render_template
+# , redirect, url_for
 from forms import FileForm, ChoosePictureForm
 
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from Region_growing import region_growing
 
-# import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,7 +21,7 @@ from baseconfig import app
 
 def load_images_from_folder(folder_path):
     dataset = []
-    names = []
+    filenames = []
     filepath = os.path.dirname(__file__) + folder_path
     for filename in os.listdir(filepath):
         if filename.endswith(".jpg"):
@@ -32,8 +32,8 @@ def load_images_from_folder(folder_path):
                 img = cv2.resize(img, (200, 100))
                 img = img.reshape(-1)
                 dataset.append(img)
-                names.append(filename)
-    return np.array(dataset), names
+                filenames.append(filename)
+    return np.array(dataset), filenames
 
 
 def load_images_segmentation(img_path):
@@ -55,28 +55,33 @@ def clustering():
     form = FileForm()
 
     if form.submit.data and form.validate():
+
         # Folder path where JPG pictures are stored
-        folder = form.folder.data
-        clusters = form.clusters.data
-        show_filenames = form.show_filenames.data
+        # Additional datasets can be placed here. Only jpeg support.
+        folder:str = form.folder.data 
+        # ----------------------------------------
+        clusters:int = form.clusters.data
+        show_filenames:bool = form.show_filenames.data 
         data, filenames = load_images_from_folder(f"/static/photos/clustering/{folder}")
+        
+        print(filenames)
 
         # Apply PCA to reduce dimensionality
         num_components = len(filenames)  # You can adjust this number based on your needs
         pca = PCA(n_components=num_components)
         data_pca = pca.fit_transform(data)
 
-        # Perform clustering (K-Means in this example)
-        num_clusters = clusters  # You can adjust the number of clusters
+        # Perform K-means clustering
+        num_clusters = clusters  # Adjust the number of clusters
         kmeans = KMeans(n_clusters=num_clusters)
         labels = kmeans.fit_predict(data_pca)
 
-        # Visualize the clustered data
-
+        # Visualize the clustered data using matplotlib
         fig = Figure(figsize=(8, 6))
         plot = fig.subplots()
 
-        colors = ["r", "b", "g", "c", "m", "y", "k", "#FF00FF"]
+        colors = ["c", "m", "y", "k", "r", "b", "g", "#FF00FF"]
+        
         for i in range(num_clusters):
             cluster_data = data_pca[labels == i]
             cluster_filenames = [filenames[j] for j in range(len(filenames)) if labels[j] == i]
@@ -98,6 +103,7 @@ def clustering():
         plot.set_xlabel("Principal Component 1")
         plot.set_ylabel("Principal Component 2")
 
+        # Save plot to variabel
         buf = BytesIO()
         fig.savefig(buf, format="png")
         data = b64encode(buf.getvalue()).decode("utf-8")
@@ -108,7 +114,7 @@ def clustering():
             form=form,
             plot_image=plot_image,
             folder=folder,
-            filenames=filenames,
+            filenames=sorted(filenames),
             show_filenames=show_filenames,
         )
 
@@ -121,6 +127,8 @@ def segmentation():
     if form.submit.data and form.validate():
         # Folder path where pictures are stored
         picture_name = form.picture.data
+        # Threshold set by user
+        threshold = form.threshold.data
         img_thres, gray = load_images_segmentation(f"/static/photos/segmentation/{picture_name}")
 
         plt.switch_backend("agg")
@@ -128,7 +136,7 @@ def segmentation():
         # Region growing
         # Seed point is in the middle of the picture.
         seed_point = (gray.shape[0] // 2, gray.shape[1] // 2)
-        threshold = 80
+        # threshold = 80
         img_region_grow = region_growing(gray, seed_point, threshold)
         plt.imshow(img_region_grow)
         buf = BytesIO()

@@ -1,8 +1,8 @@
 import os
 from flask_wtf import FlaskForm
 
-from wtforms import SubmitField, SelectField, BooleanField
-
+from wtforms import SubmitField, SelectField, BooleanField, IntegerField
+from wtforms.validators import NumberRange
 
 class FileForm(FlaskForm):
     folder_choices = [
@@ -28,4 +28,5 @@ class ChoosePictureForm(FlaskForm):
         if os.path.isfile(os.path.join(os.path.dirname(__file__), f"static/photos/segmentation/{picture}"))
     ]
     picture = SelectField("Select a picture", choices=picture_choices)
+    threshold = IntegerField("Threshold", validators=[NumberRange(min=0)])
     submit = SubmitField("Select")
