@@ -36,17 +36,21 @@
 
 
 {% if plot_image != '' %}
-    
+    <hr>
     <label>Dataset:</label><br \>
 
-    {% for file in filenames %}
-        
-        <img class="thumbnails" src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="{{ file }}">
-        {% if show_filenames %}
-            <label>{{ file }}</label>
-        {% endif %}
+    <div class="thumbs_container">
+        {% for file in filenames %}
+            <div class="thumbnail">
 
-    {% endfor %}
+                <img class="thumbnails" src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="{{ file }}">
+                {% if show_filenames %}
+                <br><label>{{ file }}</label>
+                {% endif %}
+            
+            </div>
+        {% endfor %}
+    </div>  
 
     
     <img class="plot" width="100%" src="{{ plot_image }}" alt="Nopy">

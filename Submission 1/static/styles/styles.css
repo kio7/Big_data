@@ -34,7 +34,14 @@ label {
     box-shadow: 0px 4px 15px 0px #000000;
 }
 
+.thumbs_container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .thumbnails {
+    /* display: flex; */
+    /* object-fit: contain; */
     margin: 5px;
     width: 70px;
     border: #3f3f3f solid 2px;
@@ -43,7 +50,7 @@ label {
 }
 
 .thumbnails:hover {
-    transform: scale(2.5);
+    transform: scale(1.9);
 }
 
 
