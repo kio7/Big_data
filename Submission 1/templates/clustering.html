@@ -52,8 +52,24 @@
         {% endfor %}
     </div>  
 
-    
     <img class="plot" width="100%" src="{{ plot_image }}" alt="Nopy">
+
+    <hr>
+    <h2>Sorted dataset</h2>
+
+    {% for cluster, images in cluster_display_images.items() %}
+        <label>Cluster no. {{ cluster }}</label>
+        <div class="thumbs_container">
+            {% for file in images %}
+                <div class="thumbnail">
+                    <img class="thumbnails" src="{{ url_for('static', filename='photos/clustering/' + folder + '/' + file) }}" alt="{{ file }}">
+                    {% if show_filenames %}
+                    <br><label>{{ file }}</label>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 
 {% endif %}
 

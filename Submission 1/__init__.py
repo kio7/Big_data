@@ -64,7 +64,6 @@ def clustering():
         show_filenames:bool = form.show_filenames.data 
         data, filenames = load_images_from_folder(f"/static/photos/clustering/{folder}")
         
-        print(filenames)
 
         # Apply PCA to reduce dimensionality
         num_components = len(filenames)  # You can adjust this number based on your needs
@@ -81,10 +80,12 @@ def clustering():
         plot = fig.subplots()
 
         colors = ["c", "m", "y", "k", "r", "b", "g", "#FF00FF"]
-        
+        cluster_display_images = {}
+
         for i in range(num_clusters):
             cluster_data = data_pca[labels == i]
             cluster_filenames = [filenames[j] for j in range(len(filenames)) if labels[j] == i]
+            cluster_display_images[i] = sorted(cluster_filenames)
 
             if show_filenames:
                 plot.scatter(cluster_data[:, 0], cluster_data[:, 1], c=colors[i % len(colors)], label=f"Cluster {i+1}")
@@ -97,6 +98,7 @@ def clustering():
                     c=colors[i % len(colors)],
                     label=f"Cluster {i+1}",
                 )
+        print(cluster_display_images)
 
         plot.set_title("PCA and K-Means Clustering")
         plot.legend()
@@ -115,6 +117,7 @@ def clustering():
             plot_image=plot_image,
             folder=folder,
             filenames=sorted(filenames),
+            cluster_display_images = cluster_display_images,
             show_filenames=show_filenames,
         )
 
