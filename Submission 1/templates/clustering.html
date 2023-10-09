@@ -30,7 +30,6 @@
                     {{ form.submit(class='btn btn-success mt-2') }}
                 </div>
             </div>
-
     </form>
 </div>
 
@@ -55,10 +54,10 @@
     <img class="plot" width="100%" src="{{ plot_image }}" alt="Nopy">
 
     <hr>
-    <h2>Sorted dataset</h2>
+    <h2>Sorted (Clustered) dataset</h2>
 
     {% for cluster, images in cluster_display_images.items() %}
-        <label>Cluster no. {{ cluster }}</label>
+        <label>Cluster no. {{ cluster +1 }}</label>
         <div class="thumbs_container">
             {% for file in images %}
                 <div class="thumbnail">
@@ -72,8 +71,4 @@
     {% endfor %}
 
 {% endif %}
-
-
-
-
 {% endblock %}
