@@ -1,7 +1,6 @@
 import os
 from base64 import b64encode
 from io import BytesIO
-from PIL import Image
 from flask import render_template
 # , redirect, url_for
 from forms import FileForm, ChoosePictureForm
@@ -128,24 +127,28 @@ def clustering():
 def segmentation():
     form = ChoosePictureForm()
     if form.submit.data and form.validate():
-        # Folder path where pictures are stored
+        # Folder path where picture is stored
         picture_name = form.picture.data
         # Threshold set by user
-        threshold = form.threshold.data
-        img_thres, gray = load_images_segmentation(f"/static/photos/segmentation/{picture_name}")
+        threshold = form.threshold.data if form.threshold.data >= 0 and form.threshold.data <= 1000 else 50
+        # Seed point set by user
+        user_input = form.seed_point.data.strip().split(", ")
+        seed_point = (int(user_input[1]), int(user_input[0])) # Formatting for function.
 
+        img_thres, gray = load_images_segmentation(f"/static/photos/segmentation/{picture_name}")
+        
+        # Fix for main thread bug.
         plt.switch_backend("agg")
 
+
         # Region growing
-        # Seed point is in the middle of the picture.
-        seed_point = (gray.shape[0] // 2, gray.shape[1] // 2)
-        # threshold = 80
         img_region_grow = region_growing(gray, seed_point, threshold)
         plt.imshow(img_region_grow)
         buf = BytesIO()
         plt.savefig(buf)
         data = b64encode(buf.getvalue()).decode("utf-8")
         img_rg = f"data:image/png;base64,{data}"
+
 
         # Thresholding
         img_blured = cv2.medianBlur(gray, 5)
@@ -156,7 +159,26 @@ def segmentation():
         data = b64encode(buf2.getvalue()).decode("utf-8")
         img_thres = f"data:image/png;base64,{data}"
 
+
         # Watershed
+        _, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+        # noise removal
+        kernel = np.ones((3,3),np.uint8)
+        opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 2)
+        sure_bg = cv2.dilate(opening,kernel,iterations=3) # sure background area
+        # Finding sure foreground area
+        dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
+        _, sure_fg = cv2.threshold(dist_transform,0.7*dist_transform.max(),255,0)
+        # Finding unknown region
+        sure_fg = np.uint8(sure_fg)
+        final_img = cv2.subtract(sure_bg,sure_fg)
+        # Buffer
+        plt.imshow(final_img)
+        buf3 = BytesIO()
+        plt.savefig(buf3)
+        data = b64encode(buf3.getvalue()).decode("utf-8")
+        img_watershed = f"data:image/png;base64,{data}"
+
 
         return render_template(
             "segmentation.html",
@@ -165,8 +187,10 @@ def segmentation():
             picture_name=picture_name,
             img_rg=img_rg,
             img_thres=img_thres,
+            img_watershed=img_watershed,
         )
-
+    form.threshold.process_data(80)
+    form.seed_point.process_data("500, 300")
     return render_template("segmentation.html", form=form, flag=False)
 
 
