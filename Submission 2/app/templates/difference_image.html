@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block title %}Difference Image{% endblock %}
+{% block body %}
+
+<h1>***WIP**** Difference Image</h1>
+<hr>
+<p></p>
+
+<div class="mt-3">
+    <form method="POST" novalidate enctype="multipart/form-data">
+        {{ form.csrf_token() }}
+
+        <div class="row">
+            <div class="col">
+                <label for="picture">Choose picture:</label>
+                {{ form.picture(class='form-control') }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form.submit(class='btn btn-success mt-2') }}
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+<hr>
+
+
+<img src="{{ img }}" alt="Boink">
+
+
+{% endblock %}

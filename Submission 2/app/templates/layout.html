@@ -17,11 +17,13 @@
     <div class="container-md text-center">
         <div class="row">
             <div class="col"></div>
-            <div class="col-6 text-left">
+            <div class="col-8 text-left">
                 <div class="text-center">
                     <!-- ----------------MENU------------------ -->
                     <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('index') }}">Home</a>
                     <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('pattern_recognition') }}">Pattern Recognition</a>
+                    <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('dicom_pixel_data') }}">DICOM Pixel Data</a>
+                    <a class="btn btn-sm btn-primary mt-3 ml-3 mr-3" href="{{ url_for('difference_image') }}">Difference Image</a>
                 </div>
 
                 {% block body %}{% endblock %}

@@ -1,7 +1,4 @@
-# import matplotlib.pyplot as plt
 import numpy as np
-import cv2
-from pydicom import dcmread
 
 
 def dicom_to_numpy(ds):
@@ -45,28 +42,3 @@ def dicom_to_numpy(ds):
                     ((rescale_pix_val - window_min) / (window_max - window_min)) * 255)  # Normalize the intensities
 
     return new_img, pixels
-
-
-def mouse_click(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        cv2.imshow('sample image dicom', orig_image)
-        text_image = orig_image.copy()
-        pixel_value = 'Pixel Value: ' + str(orig_pixels[y][x]+int(data_set.get(0x00281052).value))
-        cv2.putText(text_image, pixel_value, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 1)
-        cv2.imshow('sample image dicom', text_image)
-
-
-if __name__ == "__main__":
-    data_set = dcmread("../app/static/images/Dicom/0266.dcm")
-    orig_image, orig_pixels = dicom_to_numpy(data_set)
-    if data_set is None:
-        print("Error: Couldn't read the image.")
-    else:
-        cv2.imshow('sample image dicom', orig_image)
-        cv2.setMouseCallback('sample image dicom', mouse_click)
-        while True:
-            key = cv2.waitKey(1) & 0xFF
-            if key == 27:  # Press 'Esc' to exit
-                break
-
-        cv2.destroyAllWindows()

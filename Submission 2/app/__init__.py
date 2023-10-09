@@ -1,17 +1,23 @@
 import os
+from base64 import b64encode
+from io import BytesIO
+
+from PIL import Image
 # from base64 import b64encode
 # from io import BytesIO
-# from PIL import Image
-from flask import render_template
-from forms import FileForm, ChoosePictureForm
+from flask import render_template, make_response
+from pydicom import dcmread
+
+from forms import FileForm, ChoosePictureForm, DICOMImageForm
 
 # from sklearn.decomposition import PCA
 # from sklearn.cluster import KMeans
 
 # from matplotlib.figure import Figure
-# import matplotlib.pyplot as plt
-# import numpy as np
-# import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import cv2
+from dicom_to_numpy import dicom_to_numpy as dtn
 
 from baseconfig import app
 
@@ -55,6 +61,49 @@ def presentation():
 @app.route("/pattern-recognition", methods=["POST", "GET"])
 def pattern_recognition():
     return render_template("pattern_recognition.html")
+
+
+@app.route("/dicom-pixel-data", methods=["POST", "GET"])
+def dicom_pixel_data():
+    form = DICOMImageForm()
+    if form.submit.data and form.validate():
+        img_path = os.path.dirname(__file__) + "/static/images/Dicom/" + form.picture.data
+        data_set = dcmread(img_path)
+        pixel_array = data_set.pixel_array
+        image, pixels = dtn(data_set)
+
+        img = Image.fromarray(image, "L")
+        image_io = BytesIO()
+        img.save(image_io, "PNG")
+        data_url = 'data:image/png;base64,' + b64encode(image_io.getvalue()).decode('ascii')
+        return render_template("dicom_pixel_data.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set)
+    return render_template("dicom_pixel_data.html", form=form)
+
+@app.route("/difference_image", methods=["POST", "GET"])
+def difference_image():
+    form = DICOMImageForm()
+    if form.submit.data and form.validate():
+        img_path = os.path.dirname(__file__) + "/static/images/Dicom/" + form.picture.data
+        data_set = dcmread(img_path)
+        image, pixels = dtn(data_set)
+        file_name = form.picture.data
+        file_name = "0" + str(int(file_name.split(".")[0]) + 1) + ".dcm"
+        img_path2 = os.path.dirname(__file__) + "/static/images/Dicom/" + file_name
+        data_set2 = dcmread(img_path2)
+        image2, pixels2 = dtn(data_set2)
+        diff_image = np.zeros((len(image), len(image[0])), np.uint8)
+        for i in range(0, len(image)):
+            for j in range(0, len(image[i])):
+                if image[i][j] > image2[i][j]:
+                    diff_image[i][j] = image[i][j] - image2[i][j]
+                else:
+                    image[i][j] = image2[i][j] - image[i][j]
+        img = Image.fromarray(diff_image, "L")
+        image_io = BytesIO()
+        img.save(image_io, "PNG")
+        data_url = 'data:image/png;base64,' + b64encode(image_io.getvalue()).decode('ascii')
+        return render_template("difference_image.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set)
+    return render_template("difference_image.html", form=form)
 
 
 if __name__ == "__main__":
