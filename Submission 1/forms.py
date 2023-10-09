@@ -27,6 +27,8 @@ class ChoosePictureForm(FlaskForm):
         if os.path.isfile(os.path.join(os.path.dirname(__file__), f"static/photos/segmentation/{picture}"))
     ]
     picture = SelectField("Select a picture", choices=picture_choices)
-    threshold = IntegerField("Threshold")
+    threshold_rg = IntegerField("Threshold Region Growing")
     seed_point = StringField("Seed Point")
+    threshold = SelectField("Threshold", choices=[(3, "3"), (7, "7"), (11, "11"), (21, "21")], coerce=int)
+    watershed = SelectField("Watershed", choices=[(0.1, "0.1"), (0.5, "0.5"), (1.0, "1.0")], coerce=float)
     submit = SubmitField("Select")

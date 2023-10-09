@@ -125,12 +125,12 @@ def clustering():
 
 @app.route("/segmentation", methods=["POST", "GET"])
 def segmentation():
-    form = ChoosePictureForm()
+    form = ChoosePictureForm(threshold=11, watershed=0.5)
     if form.submit.data and form.validate():
         # Folder path where picture is stored
         picture_name = form.picture.data
         # Threshold set by user
-        threshold = form.threshold.data if form.threshold.data >= 0 and form.threshold.data <= 1000 else 50
+        threshold = form.threshold_rg.data if form.threshold_rg.data >= 0 and form.threshold_rg.data <= 1000 else 50
         # Seed point set by user
         user_input = form.seed_point.data.strip().split(", ")
         seed_point = (int(user_input[1]), int(user_input[0])) # Formatting for function.
@@ -150,9 +150,8 @@ def segmentation():
         img_rg = f"data:image/png;base64,{data}"
 
 
-        # Thresholding
-        img_blured = cv2.medianBlur(gray, 5)
-        img_thres = cv2.adaptiveThreshold(img_blured, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+        # Thresholding 
+        img_thres = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, form.threshold.data, 2)
         plt.imshow(img_thres)
         buf2 = BytesIO()
         plt.savefig(buf2)
@@ -160,18 +159,24 @@ def segmentation():
         img_thres = f"data:image/png;base64,{data}"
 
 
-        # Watershed
-        _, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+        """ Watershed """
+        _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+        
         # noise removal
         kernel = np.ones((3,3),np.uint8)
-        opening = cv2.morphologyEx(thresh,cv2.MORPH_OPEN,kernel, iterations = 2)
-        sure_bg = cv2.dilate(opening,kernel,iterations=3) # sure background area
+        opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN,kernel, iterations = 1)
+        sure_bg = cv2.dilate(opening, kernel, iterations = 5) # sure background area
+        
         # Finding sure foreground area
-        dist_transform = cv2.distanceTransform(opening,cv2.DIST_L2,5)
-        _, sure_fg = cv2.threshold(dist_transform,0.7*dist_transform.max(),255,0)
+        dist_transform = cv2.distanceTransform(opening, cv2.DIST_L2, 5)
+        
+        # User input:
+        _, sure_fg = cv2.threshold(dist_transform, form.watershed.data * dist_transform.max(), 255, 0)
+        
         # Finding unknown region
         sure_fg = np.uint8(sure_fg)
-        final_img = cv2.subtract(sure_bg,sure_fg)
+        final_img = cv2.subtract(sure_bg, sure_fg)
+        
         # Buffer
         plt.imshow(final_img)
         buf3 = BytesIO()
@@ -189,7 +194,8 @@ def segmentation():
             img_thres=img_thres,
             img_watershed=img_watershed,
         )
-    form.threshold.process_data(80)
+    # Default values:
+    form.threshold_rg.process_data(80)
     form.seed_point.process_data("500, 300")
     return render_template("segmentation.html", form=form, flag=False)
 
