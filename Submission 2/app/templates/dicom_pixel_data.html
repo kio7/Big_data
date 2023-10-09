@@ -26,13 +26,17 @@
     </form>
 
 </div>
-<hr>
-<div style="float: right">
-<p>Pixel Data</p>
-<textarea class="form-control" rows="18" cols="36" style="overflow-y: scroll; width: fit-content ">{%for pixel in pixel_data %}{{ pixel }}{%endfor%}</textarea>
-</div>
 
-<img src="{{ img }}" alt="Boink">
+{% if submitted != None %}
 
+    <hr>
+    <div style="float: right">
+    <p>Pixel Data</p>
+    <textarea class="form-control" rows="18" cols="36" style="overflow-y: scroll; width: fit-content ">{%for pixel in pixel_data %}{{ pixel }}{%endfor%}</textarea>
+    </div>
+
+    <img src="{{ img }}" alt="Boink">
+
+{% endif %}
 
 {% endblock %}

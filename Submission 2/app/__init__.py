@@ -76,8 +76,8 @@ def dicom_pixel_data():
         image_io = BytesIO()
         img.save(image_io, "PNG")
         data_url = 'data:image/png;base64,' + b64encode(image_io.getvalue()).decode('ascii')
-        return render_template("dicom_pixel_data.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set)
-    return render_template("dicom_pixel_data.html", form=form)
+        return render_template("dicom_pixel_data.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set, submitted=1)
+    return render_template("dicom_pixel_data.html", form=form, submitted=None)
 
 @app.route("/difference_image", methods=["POST", "GET"])
 def difference_image():
@@ -102,8 +102,8 @@ def difference_image():
         image_io = BytesIO()
         img.save(image_io, "PNG")
         data_url = 'data:image/png;base64,' + b64encode(image_io.getvalue()).decode('ascii')
-        return render_template("difference_image.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set)
-    return render_template("difference_image.html", form=form)
+        return render_template("difference_image.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set, submitted=1)
+    return render_template("difference_image.html", form=form, submitted=None)
 
 
 if __name__ == "__main__":
