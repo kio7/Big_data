@@ -22,12 +22,15 @@
         </div>
         <div class="row">
             <div class="col">
+                <label for="threshold">Enter seed point e.g. (x, y) (100, 300)</label>
+                {{ form.seed_point(class='form-control') }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
                 {{ form.submit(class='btn btn-success mt-2') }}
             </div>
         </div>
-
-            
-    
     </form>
 </div>
 
@@ -40,8 +43,12 @@
     <!-- Edited -->
     <label class="mt-4">Region Growing</label>
     <img width="100%" src="{{ img_rg }}" alt="Nope">
+    
     <label class="mt-4">Thresholding</label>
     <img width="100%" src="{{ img_thres }}" alt="Nope">
+    
+    <label class="mt-4">Watershed</label>
+    <img width="100%" src="{{ img_watershed }}" alt="Nope">
 {% endif %}
 
 {% endblock %}
