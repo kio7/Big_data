@@ -1,25 +1,17 @@
 import os
 from base64 import b64encode
 from io import BytesIO
-
 from PIL import Image
-# from base64 import b64encode
-# from io import BytesIO
 from flask import render_template, make_response
 from pydicom import dcmread
-
 from forms import FileForm, ChoosePictureForm, DICOMImageForm
-
-# from sklearn.decomposition import PCA
-# from sklearn.cluster import KMeans
-
-# from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 from dicom_to_numpy import dicom_to_numpy as dtn
-
 from baseconfig import app
+from pr_model import search_pr_model
+
 
 
 def load_images_from_folder(folder_path):
