@@ -4,8 +4,59 @@
 
 <h1>Pattern Recognition</h1>
 <hr>
+<p>
+    This pattern recognition algorithm was created by using SciKit Learn to train a machine learning model on a
+    dataset from <a href="https://www.kaggle.com/datasets/moltean/fruits/">Kaggle.com</a>. The dataset has
+    pictures of 131 different fruits and vegetables.
+</p>
+<p>
+    When choosing a picture from the dropdown you are selecting a single image from the dataset, the image is then
+    sent to the model for classification. If the classification is successfull you will get back the name of the 
+    fruit. The filenames in the dropdown have no direct contact with the machinelearning algorithm directly, and
+    are there only for you to be able to see the correlation.
+</p>
+<p class="italic">
+    Disclaimer !!<br>
+    This model does not work well with pictures outside of the dataset. This is likely due to the fact that to
+    train the model on a dataset this large, and with limited hardware to run it, it would simply take too long
+    with images of a high(er) resolution. Because of this, the entire dataset was resized to 15 by 15 pixels
+    which does not yield a resolution good enough to expect good results with other data.
 
-<h2>STØFFS</h2>
+</p>
+<hr>
+<div class="mt-3">
+    <form method="POST" novalidate enctype="multipart/form-data">
+        {{ form.csrf_token() }}
 
+        <div class="row">
+            <div class="col">
+                <label for="picture">Choose picture:</label>
+                {{ form.picture(class='form-control') }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form.submit(class='btn btn-success mt-2') }}
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% if submitted != None %}
+
+        <hr>
+    <div class="text-center">
+        <p>Selected image:</p>
+        <img src="{{ url_for('static', filename='pr_images/' + image) }}" alt="">
+        <br><br>
+        <h3>The model predicts that this is a</h3> 
+        <h1>{{ prediction }}</h1>
+    </div>
+
+
+{% endif %}
 
 {% endblock %}

@@ -4,13 +4,14 @@ from io import BytesIO
 from PIL import Image
 from flask import render_template, make_response
 from pydicom import dcmread
-from forms import FileForm, ChoosePictureForm, DICOMImageForm
+from forms import PatterRecognitionForm, DICOMImageForm
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 from dicom_to_numpy import dicom_to_numpy as dtn
 from baseconfig import app
 from pr_model import search_pr_model
+from skimage.io import imread
 
 
 
@@ -45,17 +46,30 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/presentation", methods=["POST", "GET"])
-def presentation():
-    form = FileForm()
-
-
 @app.route("/pattern-recognition", methods=["POST", "GET"])
 def pattern_recognition():
-
-
+    form = PatterRecognitionForm()
     
-    return render_template("pattern_recognition.html")
+    if form.submit.data and form.validate():
+        image = form.picture.data
+        image_raw = imread(os.path.join(os.path.dirname(__file__), "static/pr_images/", image))
+        image_uri = os.path.join(os.path.dirname(__file__), "static/pr_images/", image)
+        prediction = search_pr_model(image_raw)
+
+
+        print(f"Denne: {prediction}")
+        print(image_uri)
+        return render_template(
+            "pattern_recognition.html", 
+            form = form,
+            image = image,
+            prediction = prediction,
+            submitted = 1
+            )
+
+
+        
+    return render_template("pattern_recognition.html", form = form, submitted=None)
 
 
 @app.route("/dicom-pixel-data", methods=["POST", "GET"])

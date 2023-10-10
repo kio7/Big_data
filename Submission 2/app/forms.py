@@ -5,19 +5,13 @@ from wtforms import SubmitField, SelectField, BooleanField, IntegerField
 from wtforms.validators import NumberRange
 
 
-class FileForm(FlaskForm):
-    clusters = SelectField(
-        "Select no. of clusters",
-        choices=[(2, "2"), (3, "3"), (4, "4"), (5, "5"), (6, "6"), (7, "7"), (8, "8")],
-        coerce=int,
-        default=3,
-    )
-    show_filenames = BooleanField("Show filenames?")
-    submit = SubmitField("Select")
-
-
-class ChoosePictureForm(FlaskForm):
-    threshold = IntegerField("Threshold", validators=[NumberRange(min=0)])
+class PatterRecognitionForm(FlaskForm):
+    picture_choices = sorted([
+        (picture, picture)
+        for picture in os.listdir(os.path.join(os.path.dirname(__file__), "static/pr_images"))
+        if os.path.isfile(os.path.join(os.path.dirname(__file__), f"static/pr_images/{picture}"))
+    ])
+    picture = SelectField("Select a picture", choices=picture_choices)
     submit = SubmitField("Select")
 
 
