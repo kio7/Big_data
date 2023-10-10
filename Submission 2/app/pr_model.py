@@ -11,7 +11,9 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
 
-def make_json():
+# Creates a jsonfile from directory.
+# Used to make a file with categories from dataset
+def make_json() -> None:
     def get_folder_names(directory):
         # Get a list of folder names in the specified directory
         folder_names = [folder for folder in os.listdir(directory) if os.path.isdir(os.path.join(directory, folder))]
@@ -22,23 +24,14 @@ def make_json():
         with open(output_file, 'w') as json_file:
             json.dump(folder_names, json_file, indent=4)
 
-    # Specify the directory path you want to scan
     directory_path = 'fruits-360_dataset/fruits-360/Test'
-
-    # Specify the name of the output JSON file
     output_file = 'folder_names.json'
-
-    # Get the folder names
     folder_names = get_folder_names(directory_path)
-
-    # Save the folder names as a JSON file
     save_to_json(folder_names, output_file)
-
-    # Print a confirmation message
     print(f'Folder names saved to {output_file}.')
 
 
-def import_json_to_list(json_file):
+def import_json_to_list(json_file) -> list:
     # Initialize an empty list to store the imported data
     data_list = []
 
@@ -55,7 +48,8 @@ def import_json_to_list(json_file):
     return data_list
 
 
-# 
+# Code to itereate through a dataset with training and testdata (images). Creates a model.p
+# This can take a long time depending on the size of your dataset. 
 def make_model(path, input_dir, sets, categories) -> None:
 
     # Prepare data
@@ -68,6 +62,7 @@ def make_model(path, input_dir, sets, categories) -> None:
     data = []
     labels = []
 
+    # Load data and resize images. The larger the images the better the model.
     print("Loading data...")
     for fruit_set in sets:
         for category_idx, category in enumerate(categories):
@@ -82,18 +77,17 @@ def make_model(path, input_dir, sets, categories) -> None:
                 labels.append(category_idx)
 
 
+    # Setting up arrays and splitting before sending to SVC.
     print("Creating arrays...")
     data = np.asarray(data)
     labels = np.asarray(labels)
-
-
     print("Splitting data...")
-    # train / test split
     x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.33, shuffle=True, stratify=labels)
 
 
+    
+    # This point takes the longest.
     print("Training classifier...")
-    # train classifier
     classifier = SVC()
 
     parameters = [{'gamma': [0.01, 0.001, 0.0001], 'C': [1, 10, 100, 1000]}]
@@ -102,21 +96,19 @@ def make_model(path, input_dir, sets, categories) -> None:
 
     grid_search.fit(x_train, y_train)
 
+    # Testing performance
     print("Testing performance...")
-    # test performance
     best_estimator = grid_search.best_estimator_
-
     y_prediction = best_estimator.predict(x_test)
-
     score = accuracy_score(y_prediction, y_test)
-
     print('{}% of samples were correctly classified'.format(str(score * 100)))
 
+    # Writing to file.
     print("Writing model...")
     pickle.dump(best_estimator, open('./model.p', 'wb'))
     print("Done!")
 
-def search_pr_model(image):
+def search_pr_model(image) -> str:
     
     # Prepare data
     path = os.path.dirname(__file__)
@@ -133,10 +125,3 @@ def search_pr_model(image):
     y_output = MODEL.predict(flat_data)
 
     return categories[y_output[0]]
-
-# if __name__ == "__main__":
-
-#     path = os.path.join(os.path.dirname(__file__), "static/pr_images/")
-#     for file in sorted(os.listdir(path)):
-#         photo = imread(path + file)
-#         print(f" The fruit is a {search_model(photo)}")

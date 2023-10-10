@@ -52,6 +52,9 @@ def presentation():
 
 @app.route("/pattern-recognition", methods=["POST", "GET"])
 def pattern_recognition():
+
+
+    
     return render_template("pattern_recognition.html")
 
 
