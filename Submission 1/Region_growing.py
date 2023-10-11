@@ -25,4 +25,4 @@ def region_growing(img, seed, threshold):
             stack.append((x, y - 1))
             stack.append((x, y + 1))
 
-    return region 
+    return region
