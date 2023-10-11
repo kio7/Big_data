@@ -17,7 +17,7 @@ import cv2
 
 from baseconfig import app
 
-
+# Helper function for loading images from folder in to an array.
 def load_images_from_folder(folder_path):
     dataset = []
     filenames = []
