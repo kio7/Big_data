@@ -2,8 +2,24 @@
 {% block title %}Difference Image{% endblock %}
 {% block body %}
 
-<h1>***WIP**** Difference Image</h1>
+<h1>Difference Image</h1>
 <hr>
+<p>We are using DICOM images again, same as in pixel data and transforming them the same way to display them as greyscale
+    images in the browser.
+
+    <p>Each set consists of 5 consecutive images. The first and the last image in the set are shown with all the information present.
+    Images 2, 3 and 4 are shown as the difference image.
+
+    <p>The difference image is calculated by subtracting the pixel values of the two images. The result is a new image
+    where the pixel values are the difference between the two images. The difference image is then displayed as a
+    greyscale image.
+
+    <p>Difference images can be useful to highlight changes but also to sometimes greatly reduce the size of the data by
+    removing redundant information such as pixel values that do not change over the course of an image series or video.
+
+
+</p>
+    <hr>
 <p></p>
 
 <div class="mt-3">
@@ -28,10 +44,10 @@
 </div>
 {% if submitted %}
 <hr>
-
+{% for img in images %}
 
     <img src="{{ img }}" alt="Boink">
-
+{% endfor %}
 {% endif %}
 
 {% endblock %}
