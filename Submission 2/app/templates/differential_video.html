@@ -6,19 +6,55 @@
 <p class="horizontal-centered">
     This displays the differential frames between consecutive frames in a video.
     <br>Source of video is an laparoscopic operation on a person.
+    <br>To see the array data of the differential frame, click the "Pause/Resume Video" button.
 </p>
 
 <hr>
+<div class="diff-frame-container">
+    <img src="{{ url_for('differential_video_feed') }}" class="diff_video" width="640" height="480" />
+    <textarea id="differentialFrameData" rows="10" cols="30" readonly></textarea>
+</div>
 
-<img src="{{ url_for('differential_video_feed') }}" class="diff_video" width="640" height="480" />
-<button class="restart_btn" id="restartButton">Restart Video Feed</button>
+<button class="video_btn" id="restartButton">Restart Video Feed</button>
+<button class="video_btn" id="pauseButton">Pause/Resume Video</button>
 
-    <script>
-        // JavaScript to reload the video feed when the button is clicked
-        document.getElementById("restartButton").addEventListener("click", function() {
-            // Reload the page to restart the video feed
-            location.reload();
-        });
-    </script>
+<script>
+    // JavaScript to reload the video feed when the button is clicked
+    document.getElementById("restartButton").addEventListener("click", function() {
+        // Reload the page to restart the video feed
+        location.reload();
+    });
+</script>
+
+<script>
+    const videoPlayer = document.getElementById("videoPlayer");
+    const pauseButton = document.getElementById("pauseButton");
+    const differentialFrameData = document.getElementById("differentialFrameData");
+    let isPaused = false;
+
+    // Function to pause or resume the video
+    function toggleVideoPlayback() {
+        if (isPaused) {
+            fetch("/resume_video_feed").then(() => {
+                pauseButton.innerText = "Pause Video";
+            });
+        } else {
+            fetch("/pause_video_feed").then(() => {
+                pauseButton.innerText = "Resume Video";
+                // Fetch differential frame data when pausing
+                fetch("/get_differential_frame_data")
+                    .then(response => response.text())
+                    .then(data => {
+                        differentialFrameData.value = data;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching differential frame data:", error);
+                    });
+            });
+        }
+        isPaused = !isPaused;
+    }
+    pauseButton.addEventListener("click", toggleVideoPlayback);
+</script>
 
 {% endblock %}

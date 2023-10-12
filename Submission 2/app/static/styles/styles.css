@@ -94,9 +94,11 @@ label {
 .diff_video {
     display: block;
     margin: 0 auto;
+    max-width: 50%;
+    height: 480px;
 }
 
-.restart_btn {
+.video_btn {
     display: block;
     margin: 0 auto;
     margin-top: 0.5rem;
@@ -105,4 +107,17 @@ label {
 .horizontal-centered {
     margin: 0 auto;
     text-align: center;
+}
+
+.diff-frame-container {
+    display: flex; /* Display children side-by-side */
+    align-items: flex-start; /* Align children to the top */
+}
+#differentialFrameData {
+    flex: 1; /* Share 50% of the horizontal space */
+    max-width: 50%; /* Ensure it doesn't exceed 50% */
+    margin-left: 10px; /* Add some spacing between the video and textarea */
+    height: 480px;
+    white-space: pre-wrap; /* Allow text to wrap to the next line */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
 }

@@ -14,6 +14,7 @@ from pr_model import search_pr_model
 from skimage.io import imread
 import time
 
+differential_frame_data = None
 
 def load_images_from_folder(folder_path):
     dataset = []
@@ -122,13 +123,32 @@ def difference_image():
         return render_template("difference_image.html", form=form, images=data_url_set, submitted=1)
     return render_template("difference_image.html", form=form, submitted=None)
 
+@app.route('/pause_video_feed')
+def pause_video_feed():
+    global video_feed_paused
+    video_feed_paused = True
+    return "Video feed paused"
+
+@app.route('/resume_video_feed')
+def resume_video_feed():
+    global video_feed_paused
+    video_feed_paused = False
+    return "Video feed resumed"
+
 def generate_diff_frames():
+    global differential_frame_data
+    global video_feed_paused
+    video_feed_paused = False
+
     vid_path = os.path.dirname(__file__) + "/static/images/video001_kort.mp4"
     cap = cv2.VideoCapture(vid_path)
     ret, prev_frame = cap.read()
     prev_frame_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
 
     while True:
+        if video_feed_paused:
+            time.sleep(0.3)
+            continue
         ret, curr_frame = cap.read()
         if not ret:
             # Display a "Feed Ended" message on the last frame
@@ -144,6 +164,7 @@ def generate_diff_frames():
 
         curr_frame_gray = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
         differential_frame = cv2.absdiff(curr_frame_gray, prev_frame_gray)
+        differential_frame_data = differential_frame
 
         ret, buffer = cv2.imencode('.jpg', differential_frame)
         if not ret:
@@ -164,6 +185,13 @@ def differential_video_feed():
 def differential_video():
     return render_template('differential_video.html')
 
+@app.route('/get_differential_frame_data')
+def get_differential_frame_data():
+    global differential_frame_data  # Access the global differential frame data
+    if differential_frame_data is not None:
+        data = differential_frame_data.tolist()
+        return str(data)
+    return "No data available"
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)
