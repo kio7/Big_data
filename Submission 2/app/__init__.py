@@ -95,14 +95,14 @@ def difference_image():
         image_set = []
         image_set_diff = []
         data_url_set = []
-        for i in range(0, 5):
+        for i in range(0, 2):
             file_name = form.picture.data
             file_name = "0" + str(int(file_name.split(".")[0]) + i) + ".dcm"
             img_path = os.path.dirname(__file__) + "/static/images/Dicom/" + file_name
             data_set.append(dcmread(img_path))
             image, pixels = dtn(data_set[i])
             image_set.append(image)
-        for i in range(0, 3):
+        for i in range(0, 1):
             diff_image = np.zeros((len(image_set[i]), len(image_set[i][0])), np.uint8)
             for j in range(0, len(image_set[i])):
                 for k in range(0, len(image_set[i][j])):
@@ -112,14 +112,16 @@ def difference_image():
                         diff_image[j][k] = abs(image_set[i + 1][j][k] - image_set[i][j][k])
             image_set_diff.append(diff_image)
         image_set_diff.insert(0, image_set[0])
-        image_set_diff.append(image_set[4])
-        for i in range(0, 5):
+        #image_set_diff.append(image_set[4])
+        for i in range(0, 2):
             img = Image.fromarray(image_set_diff[i], "L")
             image_io = BytesIO()
             img.save(image_io, "PNG")
             data_url = 'data:image/png;base64,' + b64encode(image_io.getvalue()).decode('ascii')
             data_url_set.append(data_url)
-        return render_template("difference_image.html", form=form, images=data_url_set, submitted=1)
+
+        return render_template("difference_image.html", form=form, images=data_url_set,
+                               pixel_data=image_set_diff[1], submitted=1)
     return render_template("difference_image.html", form=form, submitted=None)
 
 def generate_diff_frames():
