@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block title %}DICOM Pixel Data{% endblock %}
+{% block body %}
+
+<h1>Differential Frames Video</h1>
+<p class="horizontal-centered">
+    This displays the differential frames between consecutive frames in a video.
+    <br>Source of video is an laparoscopic operation on a person.
+</p>
+
+<hr>
+
+<img src="{{ url_for('differential_video_feed') }}" class="diff_video" width="640" height="480" />
+<button class="restart_btn" id="restartButton">Restart Video Feed</button>
+
+    <script>
+        // JavaScript to reload the video feed when the button is clicked
+        document.getElementById("restartButton").addEventListener("click", function() {
+            // Reload the page to restart the video feed
+            location.reload();
+        });
+    </script>
+
+{% endblock %}

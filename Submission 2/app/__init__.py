@@ -2,7 +2,7 @@ import os
 from base64 import b64encode
 from io import BytesIO
 from PIL import Image
-from flask import render_template, make_response
+from flask import render_template, make_response, Response
 from pydicom import dcmread
 from forms import PatterRecognitionForm, DICOMImageForm
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ from dicom_to_numpy import dicom_to_numpy as dtn
 from baseconfig import app
 from pr_model import search_pr_model
 from skimage.io import imread
+import time
 
 
 
@@ -113,6 +114,48 @@ def difference_image():
         data_url = 'data:image/png;base64,' + b64encode(image_io.getvalue()).decode('ascii')
         return render_template("difference_image.html", form=form, img=data_url, pixel_data=pixels, data_set=data_set, submitted=1)
     return render_template("difference_image.html", form=form, submitted=None)
+
+def generate_diff_frames():
+    vid_path = os.path.dirname(__file__) + "/static/images/video001_kort.mp4"
+    cap = cv2.VideoCapture(vid_path)
+    ret, prev_frame = cap.read()
+    prev_frame_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
+
+    while True:
+        ret, curr_frame = cap.read()
+        if not ret:
+            # Display a "Feed Ended" message on the last frame
+            feed_ended_frame = np.zeros_like(prev_frame)
+            cv2.putText(feed_ended_frame, "Feed Ended", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            ret, buffer = cv2.imencode('.jpg', feed_ended_frame)
+            if not ret:
+                break
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            break
+
+        curr_frame_gray = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
+        differential_frame = cv2.absdiff(curr_frame_gray, prev_frame_gray)
+
+        ret, buffer = cv2.imencode('.jpg', differential_frame)
+        if not ret:
+            break
+
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        prev_frame_gray = curr_frame_gray
+
+
+@app.route('/differential_video_feed')
+def differential_video_feed():
+    return Response(generate_diff_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/differential_video')
+def differential_video():
+    return render_template('differential_video.html')
 
 
 if __name__ == "__main__":

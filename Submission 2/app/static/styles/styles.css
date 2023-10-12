@@ -90,3 +90,19 @@ label {
 .error {
     background: var(--alert-warning);
 }
+
+.diff_video {
+    display: block;
+    margin: 0 auto;
+}
+
+.restart_btn {
+    display: block;
+    margin: 0 auto;
+    margin-top: 0.5rem;
+}
+
+.horizontal-centered {
+    margin: 0 auto;
+    text-align: center;
+}
