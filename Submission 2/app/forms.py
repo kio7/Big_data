@@ -25,3 +25,13 @@ class DICOMImageForm(FlaskForm):
     submit = SubmitField("Select")
 
 
+class DICOMDifferenceImageForm(FlaskForm):
+    picture_choices = [("069.dcm", "Set 1"), ("091.dcm", "Set 2"),
+                       ("0275.dcm", "Set 3")]
+
+    # (picture, picture)
+    # for picture in os.listdir(os.path.join(os.path.dirname(__file__), "static/images/Dicom"))
+    # if os.path.isfile(os.path.join(os.path.dirname(__file__), f"static//images/Dicom/{picture}"))
+
+    picture = SelectField("Select a picture", choices=picture_choices)
+    submit = SubmitField("Select")

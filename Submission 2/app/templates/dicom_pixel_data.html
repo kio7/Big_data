@@ -2,7 +2,27 @@
 {% block title %}DICOM Pixel Data{% endblock %}
 {% block body %}
 
-<h1>***WIP**** DICOM Pixel Data</h1>
+<h1>DICOM Pixel Data</h1>
+    <hr>
+    <p>DICOM stands for Digital Imaging and Communications in Medicine. It is a standard used for storing medical images
+        and their metadata and differs from other image formats. DICOM files store medical information such as ultrasound
+        and MRI images, along with a patient's information all in one file.
+
+    <p>Pixel data is the actual image data stored in the DICOM file. It is stored in a binary format and is not human-readable.
+
+    In order to display the .dcm image on a website, the pixel data must first be converted to greyscale values using the value
+    of each pixel, window-width and center as well as the rescale slope and intercept.
+
+    To the right of the image is the pixel data in a human-readable format as an array of values. Those are the original values, not the greyscale values.
+
+    This pixel data is only a small portion of the entire DICOM file. The rest of the file contains metadata such as patient information,
+    the type of scan, and the date of the scan.
+
+    <p>For more information on DICOM files, visit <a href="https://www.dicomstandard.org/">dicomstandard.org</a>
+
+
+
+    </p>
 <hr>
 <p></p>
 
