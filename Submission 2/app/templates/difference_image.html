@@ -7,8 +7,8 @@
 <p>We are using DICOM images again, same as in pixel data and transforming them the same way to display them as greyscale
     images in the browser.
 
-    <p>Each set consists of 5 consecutive images. The first and the last image in the set are shown with all the information present.
-    Images 2, 3 and 4 are shown as the difference image.
+    <p>Each set consists of 2 consecutive images. The first image is the reference image, the second image shown is the
+        difference image between image 1 and image 2. To the right of it you can see the pixel data of the difference.
 
     <p>The difference image is calculated by subtracting the pixel values of the two images. The result is a new image
     where the pixel values are the difference between the two images. The difference image is then displayed as a
@@ -44,10 +44,15 @@
 </div>
 {% if submitted %}
 <hr>
+    <div style="float: right">
+    <p>Pixel Data</p>
+    <textarea class="form-control" rows="18" cols="20" style="overflow-y: scroll; width: fit-content ">{%for pixel in pixel_data %}{{ pixel }}{%endfor%}</textarea>
+    </div>
 {% for img in images %}
 
     <img src="{{ img }}" alt="Boink">
 {% endfor %}
+
 {% endif %}
 
 {% endblock %}
