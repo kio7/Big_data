@@ -14,7 +14,9 @@ from pr_model import search_pr_model
 from skimage.io import imread
 import time
 
+
 differential_frame_data = None
+
 
 def load_images_from_folder(folder_path):
     dataset = []
@@ -113,7 +115,6 @@ def difference_image():
                         diff_image[j][k] = abs(image_set[i + 1][j][k] - image_set[i][j][k])
             image_set_diff.append(diff_image)
         image_set_diff.insert(0, image_set[0])
-        #image_set_diff.append(image_set[4])
         for i in range(0, 2):
             img = Image.fromarray(image_set_diff[i], "L")
             image_io = BytesIO()
@@ -125,17 +126,20 @@ def difference_image():
                                pixel_data=image_set_diff[1], submitted=1)
     return render_template("difference_image.html", form=form, submitted=None)
 
+
 @app.route('/pause_video_feed')
 def pause_video_feed():
     global video_feed_paused
     video_feed_paused = True
     return "Video feed paused"
 
+
 @app.route('/resume_video_feed')
 def resume_video_feed():
     global video_feed_paused
     video_feed_paused = False
     return "Video feed resumed"
+
 
 def generate_diff_frames():
     global differential_frame_data
@@ -183,9 +187,11 @@ def generate_diff_frames():
 def differential_video_feed():
     return Response(generate_diff_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
 @app.route('/differential_video')
 def differential_video():
     return render_template('differential_video.html')
+
 
 @app.route('/get_differential_frame_data')
 def get_differential_frame_data():
@@ -194,6 +200,97 @@ def get_differential_frame_data():
         data = differential_frame_data.tolist()
         return str(data)
     return "No data available"
+
+
+@app.route('/get_optical_flow')
+def get_optical_flow(video):
+    vid_path = os.path.dirname(__file__) + "/static/images/video001_kort.mp4"
+    cap = cv2.VideoCapture(vid_path)
+    ret, prev_frame = cap.read()
+    prev_frame_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
+
+    while True:
+        ret, curr_frame = cap.read()
+        if not ret:
+            # Display a "Feed Ended" message on the last frame
+            feed_ended_frame = np.zeros_like(prev_frame)
+            cv2.putText(feed_ended_frame, "Feed Ended", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            ret, buffer = cv2.imencode('.jpg', feed_ended_frame)
+            if not ret:
+                break
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            break
+
+        curr_frame_gray = cv2.cvtColor(curr_frame, cv2.COLOR_BGR2GRAY)
+
+        flow = cv2.calcOpticalFlowFarneback(prev_frame_gray, curr_frame_gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+
+        ret, buffer = cv2.imencode('.jpg', draw_flow(curr_frame_gray, flow))
+        ret2, buffer2 = cv2.imencode('.jpg', draw_hsv(flow))
+        if not ret:
+            break
+
+        frame = buffer.tobytes()
+        frame2 = buffer2.tobytes()
+        if video:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        else:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame2 + b'\r\n')
+
+        prev_frame_gray = curr_frame_gray
+
+
+@app.route('/optical_flow_feed1')
+def optical_flow_feed1():
+    return Response(get_optical_flow(video=0), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/optical_flow_feed2')
+def optical_flow_feed2():
+    return Response(get_optical_flow(video=1), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/optical_flow')
+def optical_flow():
+    return render_template('optical_flow.html')
+
+
+def draw_flow(img, flow, step=16):
+    h, w = img.shape[:2]
+    y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
+    fx, fy = flow[y, x].T
+
+    lines = np.vstack([x, y, x - fx, y - fy]).T.reshape(-1, 2, 2)
+    lines = np.int32(lines + 0.5)
+
+    img_bgr = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    cv2.polylines(img_bgr, lines, isClosed=True, color=(0, 255, 0), thickness=1)
+
+    for (x1, y1), (x2, y2) in lines:
+        cv2.circle(img_bgr, (x1, y1), 1, (0, 255, 0), -1)
+
+    return img_bgr
+
+
+def draw_hsv(flow):
+    h, w = flow.shape[:2]
+    fx, fy = flow[:, :, 0], flow[:, :, 1]
+
+    ang = np.arctan2(fy, fx) + np.pi
+    v = np.sqrt(fx * fx + fy * fy)
+
+    hsv = np.zeros((h, w, 3), np.uint8)
+    hsv[..., 0] = ang * (180 / np.pi / 2)
+    hsv[..., 1] = 255
+    hsv[..., 2] = np.minimum(v * 4, 255)
+    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+    return bgr
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=3000)

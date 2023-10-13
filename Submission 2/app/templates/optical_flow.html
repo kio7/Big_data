@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block title %}Motion Estimation{% endblock %}
+{% block body %}
+
+<h1>Motion Estimation - Optical Flow</h1>
+<p class="horizontal-centered">
+     LOREM
+</p>
+
+<hr>
+<div class="diff-frame-container">
+    <img src="{{ url_for('optical_flow_feed2') }}" class="diff_video" width="640" height="480" />
+<img src="{{ url_for('optical_flow_feed1') }}" class="diff_video" width="640" height="480" />
+</div>
+
+
+{% endblock %}
