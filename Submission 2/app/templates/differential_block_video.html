@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block title %}Differential Frames Video{% endblock %}
+{% block body %}
+
+<h1>Differential 8x8 Blocks</h1>
+<p class="horizontal-centered">
+    This displays the 8x8 blocks of the differential frames between consecutive frames in a video.
+    <br>Source of video is a laparoscopic operation on a person.
+</p>
+
+<hr>
+<div class="diff-frame-container">
+    <img src="{{ url_for('differential_block_video_feed') }}" class="diff_video" width="640" height="480" />
+</div>
+
+
+{% endblock %}

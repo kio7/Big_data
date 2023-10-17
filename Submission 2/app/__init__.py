@@ -140,6 +140,50 @@ def resume_video_feed():
     video_feed_paused = False
     return "Video feed resumed"
 
+def generate_block_diff_frames():
+    vid_path = os.path.dirname(__file__) + "/static/images/video001_kort.mp4"
+    cap = cv2.VideoCapture(vid_path)
+    ret, prev_frame = cap.read()
+
+    while True:
+        ret, current_frame = cap.read()
+        if not ret:
+            break
+
+        # Convert frames to grayscale
+        prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
+        current_gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
+
+        # Calculate differential frame
+        diff_frame = cv2.absdiff(current_gray, prev_gray)
+
+        # Divide the differential frame into 8x8 blocks and calculate the sum of each block
+        block_size = 8
+        rows, cols = diff_frame.shape
+        for y in range(0, rows, block_size):
+            for x in range(0, cols, block_size):
+                block = diff_frame[y:y+block_size, x:x+block_size]
+                block_sum = np.sum(block)
+
+                # Overwrite each pixel in the block with block_sum
+                diff_frame[y:y+block_size, x:x+block_size] = block_sum
+
+        
+        ret, buffer = cv2.imencode('.jpg', diff_frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        
+        # Update the previous frame
+        prev_frame = current_frame
+
+@app.route('/differential_block_video_feed')
+def differential_block_video_feed():
+    return Response(generate_block_diff_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/differential_block_video')
+def differential_block_video():
+    return render_template('differential_block_video.html')
 
 def generate_diff_frames():
     global differential_frame_data
