@@ -2,10 +2,9 @@ import os
 from base64 import b64encode
 from io import BytesIO
 from PIL import Image
-from flask import render_template, make_response, Response
+from flask import render_template, Response
 from pydicom import dcmread
 from forms import PatterRecognitionForm, DICOMImageForm, DICOMDifferenceImageForm
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 from dicom_to_numpy import dicom_to_numpy as dtn
