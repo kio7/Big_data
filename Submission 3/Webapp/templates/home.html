@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock %}
+{% block body %}
+
+<style>
+    footer {
+        display: none !important;
+    }
+</style>
+
+<!-- <div class="page_heading">Root</div> -->
+<div class="page_contents">
+    {% for elem in data %}
+        <a href="{{ url_for(elem['link'], method=elem['method'], rel=elem['rel'], link=elem['href'], json=elem['json']) }}">{{ elem['rel'] }}</a>
+    {% endfor %}
+</div>
+
+
+<div class="copyright">42 4F 44 C3 98 © 2023</div>
+
+{% endblock %}
