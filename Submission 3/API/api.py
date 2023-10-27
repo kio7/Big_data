@@ -45,8 +45,8 @@ def add_book_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
         {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"},
-        {"rel": "actions", "href": url_for("delete_book", book_id=item["id"], _external=True), "method": "DELETE"},
-        {"rel": "actions", "href": url_for("update_book", book_id=item["id"], _external=True), "method": "PUT", "json": {"title": "", "author": ""}}
+        {"rel": "books", "href": url_for("delete_book", book_id=item["id"], _external=True), "method": "DELETE"},
+        {"rel": "books", "href": url_for("update_book", book_id=item["id"], _external=True), "method": "PUT", "json": ["title", "author"]}
     ]
 
 def add_cds_links(item):
@@ -59,7 +59,8 @@ def add_cd_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
         {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"},
-        {"rel": "actions", "href": url_for("delete_cd", cd_id=item["id"], _external=True), "method": "DELETE"}
+        {"rel": "cds", "href": url_for("delete_cd", cd_id=item["id"], _external=True), "method": "DELETE"},
+        {"rel": "cds", "href": url_for("update_cd", cd_id=item["id"], _external=True), "method": "PUT", "json": ["title", "creator"]}
     ]
 
 # @api_key_required
@@ -69,8 +70,8 @@ def root():
         {"rel": "library", "href": url_for("get_all", _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("get_books", _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("get_cds", _external=True), "method": "GET"},
-        {"rel": "actions", "href": url_for("create_book", _external=True), "method": "POST", "json": {"title": "", "author": ""}},
-        {"rel": "actions", "href": url_for("create_cd", _external=True), "method": "POST", "json": {"title": "", "creator": ""}},
+        {"rel": "books", "href": url_for("create_book", _external=True), "method": "POST", "json": ["title", "author"]},
+        {"rel": "cds", "href": url_for("create_cd", _external=True), "method": "POST", "json": ["title", "creator"]},
 
     ]
     return jsonify(links)
@@ -106,6 +107,7 @@ def get_book(book_id):
         return jsonify(book)
     return jsonify({"error": "Book not found"}), 404
 
+#GET ROUTES
 # @api_key_required
 @app.route("/cds", methods=["GET"])
 def get_cds():
@@ -122,6 +124,8 @@ def get_cd(cd_id):
         return jsonify(cd)
     return jsonify({"error": "CD not found"}), 404
 
+# CREATE ROUTES
+# @api_key_required
 @app.route("/books", methods=["POST"])
 def create_book():
     data = request.get_json()
@@ -132,6 +136,7 @@ def create_book():
         return jsonify(new_book), 201
     return jsonify({"error": "Invalid book data"}), 400
 
+# @api_key_required
 @app.route("/cds", methods=["POST"])
 def create_cd():
     data = request.get_json()
@@ -143,6 +148,7 @@ def create_cd():
     return jsonify({"error": "Invalid CD data"}), 400
 
 # UPDATE ROUTES
+# @api_key_required
 @app.route("/books/<int:book_id>", methods=["PUT"])
 def update_book(book_id):
     data = request.get_json()
@@ -155,6 +161,7 @@ def update_book(book_id):
         return jsonify(book)
     return jsonify({"error": "Book not found or invalid data"}), 404
 
+# @api_key_required
 @app.route("/cds/<int:cd_id>", methods=["PUT"])
 def update_cd(cd_id):
     data = request.get_json()
@@ -168,6 +175,7 @@ def update_cd(cd_id):
     return jsonify({"error": "CD not found or invalid data"}), 404
 
 # DELETE ROUTES
+# @api_key_required
 @app.route("/books/<int:book_id>", methods=["DELETE"])
 def delete_book(book_id):
     book = next((b for b in books if b["id"] == book_id), None)
@@ -177,6 +185,7 @@ def delete_book(book_id):
     return jsonify({"error": "Book not found"}), 404
 
 @app.route("/cds/<int:cd_id>", methods=["DELETE"])
+# @api_key_required
 def delete_cd(cd_id):
     cd = next((c for c in cds if c["id"] == cd_id), None)
     if cd:
