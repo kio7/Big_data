@@ -104,6 +104,7 @@ def difference_image():
             data_set.append(dcmread(img_path))
             image, pixels = dtn(data_set[i])
             image_set.append(image)
+            print(data_set)
         for i in range(0, 1):
             diff_image = np.zeros((len(image_set[i]), len(image_set[i][0])), np.uint8)
             for j in range(0, len(image_set[i])):

@@ -55,14 +55,15 @@ def api_key_required(func):
         return jsonify({"error": "Unauthorized"}), 401
     return wrapper
 
-
+@api_key_required
 @app.route("/books", methods=["GET"])
-# @api_key_required
+
 def get_books():
     for book in books:
         add_links(book)
     return jsonify(books)
 
+@api_key_required
 @app.route("/books/<int:book_id>", methods=["GET"])
 def get_book(book_id):
     book = next((b for b in books if b["id"] == book_id), None)
