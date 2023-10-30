@@ -10,12 +10,18 @@
 
 <!-- <div class="page_heading">Root</div> -->
 <div class="page_contents">
-    {% for elem in data %}
-        <a href="{{ url_for(elem['link'], method=elem['method'], rel=elem['rel'], link=elem['href'], json=elem['json']) }}">{{ elem['rel'] }}</a>
-    {% endfor %}
+    {% for elem in links %}
+        {% if elem['json'] == None %}
+        <a href="{{ elem['redirect_url'] }}?url={{ elem['api_url'] }}">List: {{ elem['rel'] }}</a> <br>
+        {% endif %}
+        
+        {% if elem['json'] %}
+        <a href="{{ elem['redirect_url'] }}{{ elem['rel'] }}">Add: {{ elem['rel'] }}</a> <br>
+        {% endif %}
+    
+        {% endfor %}
 </div>
 
 
-<div class="copyright">42 4F 44 C3 98 © 2023</div>
 
 {% endblock %}

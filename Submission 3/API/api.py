@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, url_for
 
 app = Flask(__name__)
 
-API_KEY = "your_api_key_here"
+API_KEY = "982734876345987234876345"
 
 def api_key_required(func):
     def wrapper(*args, **kwargs):
@@ -38,13 +38,13 @@ cds = [
 def add_books_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
-        {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"}
+        # {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"}
     ]
 
 def add_book_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
-        {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"},
+        # {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("delete_book", book_id=item["id"], _external=True), "method": "DELETE"},
         {"rel": "books", "href": url_for("update_book", book_id=item["id"], _external=True), "method": "PUT", "json": ["title", "author"]}
     ]
@@ -52,13 +52,13 @@ def add_book_links(item):
 def add_cds_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
-        {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"}
+        # {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"}
     ]
 
 def add_cd_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
-        {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"},
+        # {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("delete_cd", cd_id=item["id"], _external=True), "method": "DELETE"},
         {"rel": "cds", "href": url_for("update_cd", cd_id=item["id"], _external=True), "method": "PUT", "json": ["title", "creator"]}
     ]
@@ -74,6 +74,7 @@ def root():
         {"rel": "cds", "href": url_for("create_cd", _external=True), "method": "POST", "json": ["title", "creator"]},
 
     ]
+    # print(links)
     return jsonify(links)
 
 
@@ -89,8 +90,10 @@ def get_all():
         "books": books, 
         "cds": cds,
         }]
+    # print(f"Library: \n -------- \n{jsonify(library)}")
     return jsonify(library)
 
+#GET ROUTES
 # @api_key_required
 @app.route("/books", methods=["GET"])
 def get_books():
@@ -107,7 +110,6 @@ def get_book(book_id):
         return jsonify(book)
     return jsonify({"error": "Book not found"}), 404
 
-#GET ROUTES
 # @api_key_required
 @app.route("/cds", methods=["GET"])
 def get_cds():
