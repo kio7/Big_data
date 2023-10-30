@@ -4,11 +4,14 @@ import requests
 API_URL = "http://localhost:5000"
 API_KEY = "your_api_key_here"  # Replace with your API key
 
+
 @click.group()
 def cli():
     pass
 
+
 headers = {"Authorization": f"ApiKey {API_KEY}"}
+
 
 @cli.command()
 def list_books():
@@ -22,6 +25,7 @@ def list_books():
                 print(f"  - {link['rel']}: {link['href']}")
     else:
         print("Failed to retrieve books.")
+
 
 @cli.command()
 @click.argument("book_id", type=int)
@@ -37,6 +41,7 @@ def get_book(book_id):
     else:
         print("Failed to retrieve book.")
 
+
 @cli.command()
 @click.option("--title", required=True, help="Title of the book")
 @click.option("--author", required=True, help="Author of the book")
@@ -48,6 +53,7 @@ def create_book(title, author):
         print(f"Created book with ID {book['id']}")
     else:
         print("Failed to create book.")
+
 
 @cli.command()
 @click.argument("book_id", type=int)
@@ -68,6 +74,7 @@ def update_book(book_id, title, author):
     else:
         print("Failed to update book.")
 
+
 @cli.command()
 @click.argument("book_id", type=int)
 def delete_book(book_id):
@@ -78,6 +85,7 @@ def delete_book(book_id):
         print("Book not found.")
     else:
         print("Failed to delete book.")
+
 
 if __name__ == "__main__":
     cli()
