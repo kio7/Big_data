@@ -42,7 +42,7 @@ def add_books_links(item):
 
 def add_book_links(item):
     item["links"] = [
-        {"rel": "books", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
+        # {"rel": "books", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("delete_book", book_id=item["id"], _external=True), "method": "DELETE"},
         {"rel": "books", "href": url_for("update_book", book_id=item["id"], _external=True), "method": "PUT", "json": ["title", "author", "status"]},
     ]
@@ -54,7 +54,7 @@ def add_cds_links(item):
 
 def add_cd_links(item):
     item["links"] = [
-        {"rel": "cds", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
+        # {"rel": "cds", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("delete_cd", cd_id=item["id"], _external=True), "method": "DELETE"},
         {"rel": "cds", "href": url_for("update_cd", cd_id=item["id"], _external=True), "method": "PUT", "json": ["title", "creator", "status"]}
     ]
@@ -80,12 +80,12 @@ def get_all():
     for book in books:
         add_books_links(book)
     for cd in cds:
-        add_cd_links(cd)
+        add_cds_links(cd)
 
-    library = [{
+    library = {
         "books": books, 
         "cds": cds,
-        }]
+        }
     # print(f"Library: \n -------- \n{jsonify(library)}")
     return jsonify(library)
 
@@ -110,7 +110,7 @@ def get_book(book_id):
 @app.route("/cds", methods=["GET"])
 def get_cds():
     for cd in cds:
-        add_cd_links(cd)
+        add_cds_links(cd)
     return jsonify(cds)
 
 # @api_key_required

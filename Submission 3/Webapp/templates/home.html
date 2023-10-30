@@ -10,16 +10,15 @@
 
 <!-- <div class="page_heading">Root</div> -->
 <div class="page_contents">
-    {% for elem in links %}
-        {% if elem['json'] == None %}
-        <a href="{{ elem['redirect_url'] }}?url={{ elem['api_url'] }}">List: {{ elem['rel'] }}</a> <br>
+    {% for elem in data %}
+        {% if elem['method'] == "GET" %}
+            <a href="/search-library/?url={{ elem['href'] }}">List: {{ elem['rel'] }}</a> <br>
         {% endif %}
-        
-        {% if elem['json'] %}
-        <a href="{{ elem['redirect_url'] }}{{ elem['rel'] }}">Add: {{ elem['rel'] }}</a> <br>
+
+        {% if elem['method'] == "POST" %}
+            <a href="/submit/?rel={{ elem['rel'] }}&url={{  elem['href']  }}&json={{ elem['json'] }}">Add: {{ elem['rel'] }}</a> <br>
         {% endif %}
-    
-        {% endfor %}
+    {% endfor %}
 </div>
 
 
