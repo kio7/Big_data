@@ -6,6 +6,10 @@
 <!-- <div class="page_heading">Root</div> -->
 <div class="page_contents">
 {% for elem in response %}
+<h3>{{elem['title']}}</h3>
+<p>{{ elem['author']}}</p>
+<a href="/search_libraryl/{{ elem['links'][0]['rel'] }}/{{ elem['id'] }}">Go to...</a>
+<hr>
 {{ elem }}<br>
 {% endfor %}
 

@@ -1,5 +1,4 @@
 from flask import Flask, render_template, redirect, url_for, request
-
 import requests
 
 # To make the variables global.
@@ -24,38 +23,16 @@ def home():
     response = requests.get(f"{api.url}/", headers=api.headers)
     if response.status_code == 200:
         data = response.json()
-        
-        links = []
-        # links = [{"link": "get"}, {}]
-        for elm in data:
-            match elm["method"]:
-                case "GET": links.append({
-                    "rel": elm["rel"],
-                    "method": "GET",
-                    "api_url": elm["href"],
-                    "redirect_url": "/get-all/",
-                    "json": None,
-                    })
-                case "POST": links.append({
-                    "rel": elm["rel"],
-                    "method": "POST",
-                    "api_url": elm["href"],
-                    "redirect_url": "/submit/",
-                    "json": elm["json"]
-                    })
-                case "PUT": ...
-                case "DELETE": ...
-        # print(links)
-        return render_template("home.html", links=links)
+        return render_template("home.html", data = data)
     return render_template("home.html", data={"error": response.status_code, "": response.url})
 
 
-@app.route("/get-all/", methods=["GET"])
-def get_all():
+@app.route("/search-library/", methods=["GET"])
+def search_library():
 
     api_url = request.args.get('url')
     response = requests.get(f"{api_url}", headers=api.headers).json()
-    return render_template('get_all.html', response=response)
+    return render_template('search_library.html', response=response)
 
 
 @app.route("/get/<rel>/<id>", methods=["GET"])

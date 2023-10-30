@@ -16,51 +16,47 @@ def api_key_required(func):
 
 # Sample data (replace with your actual data)
 books = [
-    {"id": 1, "title": "The Great Gatsby", "author": "F. Scott Fitzgerald"},
-    {"id": 2, "title": "To Kill a Mockingbird", "author": "Harper Lee"},
-    {"id": 3, "title": "1984", "author": "George Orwell"},
-    {"id": 4, "title": "Pride and Prejudice", "author": "Jane Austen"},
-    # {"id": 5, "title": "The Catcher in the Rye", "author": "J.D. Salinger"},
-    # {"id": 6, "title": "The Hobbit", "author": "J.R.R. Tolkien"},
-    # {"id": 7, "title": "The Lord of the Rings", "author": "J.R.R. Tolkien"},
-    # {"id": 8, "title": "Brave New World", "author": "Aldous Huxley"},
-    # {"id": 9, "title": "Moby-Dick", "author": "Herman Melville"},
-    # {"id": 10, "title": "The Odyssey", "author": "Homer"}
+    {"id": 1, "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "status": 1},
+    {"id": 2, "title": "To Kill a Mockingbird", "author": "Harper Lee", "status": 1},
+    {"id": 3, "title": "1984", "author": "George Orwell", "status": 1},
+    {"id": 4, "title": "Pride and Prejudice", "author": "Jane Austen", "status": 1},
+    # {"id": 5, "title": "The Catcher in the Rye", "author": "J.D. Salinger", "status": 1},
+    # {"id": 6, "title": "The Hobbit", "author": "J.R.R. Tolkien", "status": 1},
+    # {"id": 7, "title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "status": 1},
+    # {"id": 8, "title": "Brave New World", "author": "Aldous Huxley", "status": 1},
+    # {"id": 9, "title": "Moby-Dick", "author": "Herman Melville", "status": 1},
+    # {"id": 10, "title": "The Odyssey", "author": "Homer", "status": 1}
 ]
 cds = [
-    {"id": 1, "title": "CD1", "creator": "Musician1"},
-    {"id": 2, "title": "CD2", "creator": "Musician2"},
-    {"id": 3, "title": "CD3", "creator": "Musician3"},
-    {"id": 4, "title": "CD4", "creator": "Musician4"},
+    {"id": 1, "title": "CD1", "creator": "Musician1", "status": 1},
+    {"id": 2, "title": "CD2", "creator": "Musician2", "status": 1},
+    {"id": 3, "title": "CD3", "creator": "Musician3", "status": 1},
+    {"id": 4, "title": "CD4", "creator": "Musician4", "status": 1},
 ]
 
 # Helper function to add HATEOAS links to a book
 def add_books_links(item):
     item["links"] = [
-        {"rel": "self", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
-        # {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"}
+        {"rel": "books", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
     ]
 
 def add_book_links(item):
     item["links"] = [
-        {"rel": "self", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
-        # {"rel": "collection", "href": url_for("get_books", _external=True), "method": "GET"},
+        {"rel": "books", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("delete_book", book_id=item["id"], _external=True), "method": "DELETE"},
-        {"rel": "books", "href": url_for("update_book", book_id=item["id"], _external=True), "method": "PUT", "json": ["title", "author"]}
+        {"rel": "books", "href": url_for("update_book", book_id=item["id"], _external=True), "method": "PUT", "json": ["title", "author", "status"]},
     ]
 
 def add_cds_links(item):
     item["links"] = [
         {"rel": "self", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
-        # {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"}
     ]
 
 def add_cd_links(item):
     item["links"] = [
-        {"rel": "self", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
-        # {"rel": "collection", "href": url_for("get_cds", _external=True), "method": "GET"},
+        {"rel": "cds", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("delete_cd", cd_id=item["id"], _external=True), "method": "DELETE"},
-        {"rel": "cds", "href": url_for("update_cd", cd_id=item["id"], _external=True), "method": "PUT", "json": ["title", "creator"]}
+        {"rel": "cds", "href": url_for("update_cd", cd_id=item["id"], _external=True), "method": "PUT", "json": ["title", "creator", "status"]}
     ]
 
 # @api_key_required
@@ -70,8 +66,8 @@ def root():
         {"rel": "library", "href": url_for("get_all", _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("get_books", _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("get_cds", _external=True), "method": "GET"},
-        {"rel": "books", "href": url_for("create_book", _external=True), "method": "POST", "json": ["title", "author"]},
-        {"rel": "cds", "href": url_for("create_cd", _external=True), "method": "POST", "json": ["title", "creator"]},
+        {"rel": "books", "href": url_for("create_book", _external=True), "method": "POST", "json": ["title", "author", "status"]},
+        {"rel": "cds", "href": url_for("create_cd", _external=True), "method": "POST", "json": ["title", "creator", "status"]},
 
     ]
     # print(links)
