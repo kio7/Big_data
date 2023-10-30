@@ -1,0 +1,16 @@
+{
+  "host": "45bc14b5-81eb-4768-8fec-18e66afe5ab0-europe-west1.db.astra.datastax.com",
+  "port": 29080,
+  "cql_port": 29042,
+  "keyspace": "sag_netflix",
+  "localDC": "europe-west1",
+  "caCertLocation": "./ca.crt",
+  "keyLocation": "./key",
+  "certLocation": "./cert",
+  "keyStoreLocation": "./identity.jks",
+  "keyStorePassword": "jF13qGT9onzg85cAu",
+  "trustStoreLocation": "./trustStore.jks",
+  "trustStorePassword": "rekpOnA7Sbm29C34a",
+  "csvLocation": "./data",
+  "pfxCertPassword": "Ne5qI1Z6QJ7g9lUhX"
+}
