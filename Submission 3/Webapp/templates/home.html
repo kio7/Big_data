@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock %}
+{% block body %}
+
+<style>
+    footer {
+        display: none !important;
+    }
+</style>
+
+<!-- <div class="page_heading">Root</div> -->
+<div class="page_contents">
+    {% for elem in links %}
+        {% if elem['json'] == None %}
+        <a href="{{ elem['redirect_url'] }}?url={{ elem['api_url'] }}">List: {{ elem['rel'] }}</a> <br>
+        {% endif %}
+        
+        {% if elem['json'] %}
+        <a href="{{ elem['redirect_url'] }}{{ elem['rel'] }}">Add: {{ elem['rel'] }}</a> <br>
+        {% endif %}
+    
+        {% endfor %}
+</div>
+
+
+
+{% endblock %}
