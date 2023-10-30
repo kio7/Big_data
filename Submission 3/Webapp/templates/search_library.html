@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% block title %}Get All{% endblock %}
+{% block body %}
+
+
+<!-- <div class="page_heading">Root</div> -->
+<div class="page_contents">
+    <!-- All -->
+    {% if flag == 0 %}
+        {% for key, category in response.items() %}
+            {% for elem in category %}
+                {{ elem }} <br><br>
+                <a href=""></a>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+
+    <!-- Category items -->
+    {% if flag == 1 %}
+        {% for elem in response %}
+            <!-- {{ elem }} <br> <br> -->
+            <a href="/search-library/?url={{ elem['links'][0]['href'] }}">{{ elem['title'] }}</a> <br>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Single item -->
+    {% if flag == 2 %}
+        <!-- Title & Author/Creator -->
+        <h3>{{ response['title'] }}</h3>
+        <p>{{ name }}: {{ response[name] }}</p>
+
+        <!-- Links -->
+        {% for elem in response['links'] %}
+            {% if elem['method'] == "PUT" %}
+                <a href="/edit/?url={{ elem['href'] }}">Edit</a> <br>
+            {% endif %}
+
+            {% if elem['method'] == "DELETE" %}
+                <a href="/delete/?url={{ elem['href'] }}&category={{ elem['rel'] }}">Delete</a> <br>
+            {% endif %}
+
+        {% endfor %}
+    {% endif %}
+
+
+</div>
+
+
+
+{% endblock %}
