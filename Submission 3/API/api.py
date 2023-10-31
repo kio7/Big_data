@@ -20,12 +20,12 @@ books = [
     {"id": 2, "title": "To Kill a Mockingbird", "author": "Harper Lee", "status": 1},
     {"id": 3, "title": "1984", "author": "George Orwell", "status": 1},
     {"id": 4, "title": "Pride and Prejudice", "author": "Jane Austen", "status": 1},
-    # {"id": 5, "title": "The Catcher in the Rye", "author": "J.D. Salinger", "status": 1},
-    # {"id": 6, "title": "The Hobbit", "author": "J.R.R. Tolkien", "status": 1},
-    # {"id": 7, "title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "status": 1},
-    # {"id": 8, "title": "Brave New World", "author": "Aldous Huxley", "status": 1},
-    # {"id": 9, "title": "Moby-Dick", "author": "Herman Melville", "status": 1},
-    # {"id": 10, "title": "The Odyssey", "author": "Homer", "status": 1}
+    {"id": 5, "title": "The Catcher in the Rye", "author": "J.D. Salinger", "status": 1},
+    {"id": 6, "title": "The Hobbit", "author": "J.R.R. Tolkien", "status": 1},
+    {"id": 7, "title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "status": 1},
+    {"id": 8, "title": "Brave New World", "author": "Aldous Huxley", "status": 1},
+    {"id": 9, "title": "Moby-Dick", "author": "Herman Melville", "status": 1},
+    {"id": 10, "title": "The Odyssey", "author": "Homer", "status": 1}
 ]
 cds = [
     {"id": 1, "title": "CD1", "creator": "Musician1", "status": 1},
@@ -49,7 +49,7 @@ def add_book_links(item):
 
 def add_cds_links(item):
     item["links"] = [
-        {"rel": "self", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
+        {"rel": "cd", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
     ]
 
 def add_cd_links(item):

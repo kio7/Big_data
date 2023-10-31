@@ -5,12 +5,26 @@
 
 <!-- <div class="page_heading">Root</div> -->
 <div class="page_contents">
+<a class="large-button" href="javascript:history.back()">Go Back</a>
+
     <!-- All -->
     {% if flag == 0 %}
         {% for key, category in response.items() %}
             {% for elem in category %}
-                {{ elem }} <br><br>
-                <a href=""></a>
+                <div class="library-list-item">
+                    <h1>{{ elem['id'] }}: {{ elem['title'] }}</h1>
+                    
+                    <div class="item-details">
+                        <div class="category">Category: {{ key }}</div>
+                        <div>
+                        {% for link in elem['links']%}
+                            <a class="small-button" href="/search-library/?url={{ link['href'] }}">{{ link['method'] }}</a>
+                        {% endfor %}
+                        </div>
+                    </div>
+
+
+                </div>
             {% endfor %}
         {% endfor %}
     {% endif %}
@@ -18,29 +32,49 @@
 
     <!-- Category items -->
     {% if flag == 1 %}
+
         {% for elem in response %}
-            <!-- {{ elem }} <br> <br> -->
-            <a href="/search-library/?url={{ elem['links'][0]['href'] }}">{{ elem['title'] }}</a> <br>
+            <div class="library-list-item">
+                <h1>{{ elem['id'] }}: {{ elem['title'] }}</h1>
+                
+                <div class="item-details">
+                    <div class="category">Category: {{ elem['links'][0]['rel'] }}</div>
+                    <div>
+                    {% for link in elem['links']%}
+                        <a class="small-button" href="/search-library/?url={{ link['href'] }}">{{ link['method'] }}</a>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
         {% endfor %}
     {% endif %}
 
+
+    
     <!-- Single item -->
     {% if flag == 2 %}
-        <!-- Title & Author/Creator -->
-        <h3>{{ response['title'] }}</h3>
-        <p>{{ name }}: {{ response[name] }}</p>
+        <div class="library-list-item">
+            <!-- Title & Author/Creator -->
+            <h1>{{ response['title'] }}</h1>
+            <h2>{{ name }}: {{ response[name] }}</h2>
 
-        <!-- Links -->
-        {% for elem in response['links'] %}
-            {% if elem['method'] == "PUT" %}
-                <a href="/edit/?url={{ elem['href'] }}">Edit</a> <br>
-            {% endif %}
+            <!-- Links -->
+            <div class="item-details">
+                <div></div>
+                <div>
+                {% for elem in response['links'] %}
+                    {% if elem['method'] == "PUT" %}
+                        <a class="small-button" href="/edit/?url={{ elem['href'] }}">Edit</a>
+                    {% endif %}
 
-            {% if elem['method'] == "DELETE" %}
-                <a href="/delete/?url={{ elem['href'] }}&category={{ elem['rel'] }}">Delete</a> <br>
-            {% endif %}
+                    {% if elem['method'] == "DELETE" %}
+                        <a class="small-button" href="/delete/?url={{ elem['href'] }}&category={{ elem['rel'] }}">Delete</a>
+                    {% endif %}
 
-        {% endfor %}
+                {% endfor %}
+                </div>
+            </div>
+        </div>
     {% endif %}
 
 

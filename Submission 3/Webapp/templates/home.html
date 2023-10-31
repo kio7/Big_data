@@ -2,21 +2,15 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 
-<style>
-    footer {
-        display: none !important;
-    }
-</style>
-
 <!-- <div class="page_heading">Root</div> -->
 <div class="page_contents">
     {% for elem in data %}
         {% if elem['method'] == "GET" %}
-            <a href="/search-library/?url={{ elem['href'] }}">List: {{ elem['rel'] }}</a> <br>
+            <a class="large-button" href="/search-library/?url={{ elem['href'] }}">List {{ elem['rel'] }}</a>
         {% endif %}
 
         {% if elem['method'] == "POST" %}
-            <a href="/submit/?rel={{ elem['rel'] }}&url={{  elem['href']  }}&json={{ elem['json'] }}">Add: {{ elem['rel'] }}</a> <br>
+            <a class="large-button" href="/submit/?rel={{ elem['rel'] }}&url={{  elem['href']  }}&json={{ elem['json'] }}">Add {{ elem['rel'] }}</a>
         {% endif %}
     {% endfor %}
 </div>
