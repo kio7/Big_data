@@ -10,6 +10,7 @@ class ApiVariables:
     def __init__(self) -> None:
         self.url = "http://localhost:5000/"
         self.key = "982734876345987234876345"  # API KEY
+        # self.key = "123123qweqweqwerwer23423495"  # API KEY
         self.headers = {"Authorization": f"ApiKey {self.key}"}
 
 
