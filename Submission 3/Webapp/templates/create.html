@@ -2,19 +2,21 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 
-<style>
-    footer {
-        display: none !important;
-    }
-</style>
 
 <div class="page_contents">
-    <div class="section_wrapper">
+<a class="large-button" href="javascript:history.back()">Go Back</a>
+
+    <div class="m-3">
         <form class="form" method="post" action="">
             {{ form.csrf_token() }}
-            <!-- <label for="first_name">Fornavn:</label> -->
-            <!-- {{ form.first_name(class="form-control") }} -->
+
+            {% for i in range(form.field_list|length) %}
+            {{ form.field_list[i].hidden_tag() }}
+            {# Flask-WTF needs `hidden_tag()` so CSRF works for each form #}
             
+            <label for="entry">{{ form.field_list[i].entry.label }}</label>
+            {{ form.field_list[i].entry(class="form-control") }} <br>
+            {% endfor %}
 
             {{ form.submit(class="rounded-0 btn btn-success btn-primary btn-lgbtn-block") }}
         </form>
