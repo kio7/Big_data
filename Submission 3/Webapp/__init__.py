@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, FieldList, FormField, SubmitField
+import re
 
 import requests
 
@@ -50,24 +51,48 @@ def search_library():
 
 @app.route("/submit/", methods=["GET", "POST"])
 def submit():
-    rel = request.args.get('rel')
-    api_url = request.args.get('url')
     json = request.args.get('json')
+    temp = re.split(r'\W+', json)
+    lis = []
+    for e in temp:
+        if e != '':
+            lis.append(e)
 
-    class Form(FlaskForm):
-        submit = SubmitField("Submit")
+    class EntryForm(FlaskForm):
+        entry = StringField()
 
-    form = Form()
-    for e in json:
-        setattr(form, e, StringField())
+    class MyForm(FlaskForm):
+        """A form for one or more addresses"""
+        field_list = FieldList(FormField(EntryForm), min_entries=1)
+        submit = SubmitField("Create")
+
+    columns = [{"name": x} for x in lis]
+    form = MyForm(field_list=columns)
+    for i in range(len(columns)):
+        form.field_list[i].entry.label = columns[i]['name']
+
+    if form.validate_on_submit():
+        api_url = request.args.get('url')
+        data = {}
+        for i in range(len(lis)):
+            data[form.field_list[i].entry.label] = form.field_list[i].data['entry']
+        
+        response = requests.post(api_url, json=data)
+        if response.status_code == 201:
+            item = response.json()
+            print(f"Created item with ID: {item['id']}")
+            return redirect(url_for('home'))
 
     return render_template("create.html", form=form)
+
+@app.route('/edit/', methods=["GET", "POST"])
+def edit():
+    return render_template('edit.html')
 
 
 @app.route("/delete/", methods=["GET"])
 def delete():
     api_url = request.args.get('url')
-    rel = request.args.get('category')
     requests.delete(api_url, headers=api.headers)
     return redirect(url_for('home'))
 
