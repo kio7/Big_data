@@ -68,7 +68,7 @@ def add_cd_links(item):
 
 
 @app.route("/", methods=["GET"])
-# @api_key_required
+@api_key_required
 def root():
     links = [
         {"rel": "library", "href": url_for("get_all", _external=True), "method": "GET"},
@@ -81,7 +81,7 @@ def root():
     return jsonify(links)
 
 @app.route("/all", methods=["GET"])
-# @api_key_required
+@api_key_required
 def get_all():
     for book in books:
         add_books_links(book)
@@ -97,7 +97,7 @@ def get_all():
 
 # BOOKS
 @app.route("/books", methods=["GET", "POST", "PUT", "DELETE"])
-# @api_key_required
+@api_key_required
 def books_main():
     if request.method == "GET":
         if request.args.get('book_id'):
@@ -143,7 +143,7 @@ def books_main():
 
 # CDS
 @app.route("/cds", methods=["GET", "POST", "PUT", "DELETE"])
-# @api_key_required
+@api_key_required
 def cd_main():
     if request.method == "GET":
         if request.args.get("cd_id"):
