@@ -19,26 +19,26 @@ def api_key_required(func):
 books = [
     {"id": 1, "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "status": 1},
     {"id": 2, "title": "To Kill a Mockingbird", "author": "Harper Lee", "status": 1},
-    # {"id": 3, "title": "1984", "author": "George Orwell", "status": 1},
-    # {"id": 4, "title": "Pride and Prejudice", "author": "Jane Austen", "status": 1},
-    # {"id": 5, "title": "The Catcher in the Rye", "author": "J.D. Salinger", "status": 1},
-    # {"id": 6, "title": "The Hobbit", "author": "J.R.R. Tolkien", "status": 1},
-    # {"id": 7, "title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "status": 1},
-    # {"id": 8, "title": "Brave New World", "author": "Aldous Huxley", "status": 1},
-    # {"id": 9, "title": "Moby-Dick", "author": "Herman Melville", "status": 1},
-    # {"id": 10, "title": "The Odyssey", "author": "Homer", "status": 1}
+    {"id": 3, "title": "1984", "author": "George Orwell", "status": 1},
+    {"id": 4, "title": "Pride and Prejudice", "author": "Jane Austen", "status": 1},
+    {"id": 5, "title": "The Catcher in the Rye", "author": "J.D. Salinger", "status": 1},
+    {"id": 6, "title": "The Hobbit", "author": "J.R.R. Tolkien", "status": 1},
+    {"id": 7, "title": "The Lord of the Rings", "author": "J.R.R. Tolkien", "status": 1},
+    {"id": 8, "title": "Brave New World", "author": "Aldous Huxley", "status": 1},
+    {"id": 9, "title": "Moby-Dick", "author": "Herman Melville", "status": 1},
+    {"id": 10, "title": "The Odyssey", "author": "Homer", "status": 1}
 ]
 cds = [
     {"id": 1, "title": "Close to the Edge", "creator": "Yes", "status": 1},
     {"id": 2, "title": "Selling England by the Pound", "creator": "Genesis", "status": 1},
-    # {"id": 3, "title": "The Dark Side of the Moon", "creator": "Pink Floyd", "status": 1},
-    # {"id": 4, "title": "Fragile", "creator": "Yes", "status": 1},
-    # {"id": 5, "title": "2112", "creator": "Rush", "status": 1},
-    # {"id": 6, "title": "Thick as a Brick", "creator": "Jethro Tull", "status": 1},
-    # {"id": 7, "title": "In the Court of the Crimson King", "creator": "King Crimson", "status": 1},
-    # {"id": 8, "title": "Wish You Were Here", "creator": "Pink Floyd", "status": 1},
-    # {"id": 9, "title": "Moving Pictures", "creator": "Rush", "status": 1},
-    # {"id": 10, "title": "Hemispheres", "creator": "Rush", "status": 1}
+    {"id": 3, "title": "The Dark Side of the Moon", "creator": "Pink Floyd", "status": 1},
+    {"id": 4, "title": "Fragile", "creator": "Yes", "status": 1},
+    {"id": 5, "title": "2112", "creator": "Rush", "status": 1},
+    {"id": 6, "title": "Thick as a Brick", "creator": "Jethro Tull", "status": 1},
+    {"id": 7, "title": "In the Court of the Crimson King", "creator": "King Crimson", "status": 1},
+    {"id": 8, "title": "Wish You Were Here", "creator": "Pink Floyd", "status": 1},
+    {"id": 9, "title": "Moving Pictures", "creator": "Rush", "status": 1},
+    {"id": 10, "title": "Hemispheres", "creator": "Rush", "status": 1}
 ]
 
 # Helper function to add HATEOAS links to a book
@@ -173,7 +173,7 @@ def cd_main():
         if request.args.get("cd_id"):
             cd_id = int(request.args.get("cd_id"))
             cd = next((c for c in cds if c["id"] == cd_id), None)
-            if cd and "title" in data and "author" in data:
+            if cd and "title" in data and "creator" in data:
                 cd["title"] = data["title"]
                 cd["creator"] = data["creator"]
                 return jsonify(cd)
