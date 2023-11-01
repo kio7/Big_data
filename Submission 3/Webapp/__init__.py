@@ -12,7 +12,8 @@ class ApiVariables:
         self.url = "http://localhost:5000/"
         self.key = "982734876345987234876345"  # API KEY
         # self.key = "123123qweqweqwerwer23423495"  # API KEY
-        self.headers = {"Authorization": f"ApiKey {self.key}"}
+        # self.headers = {"Authorization": f"ApiKey {self.key}"}
+        self.headers = {"Authorization": self.key}
 
 
 api = ApiVariables()
@@ -40,13 +41,11 @@ def search_library():
     name = None
     api_url = request.args.get('url')
     response = requests.get(api_url, headers=api.headers).json()
-
     if isinstance(response, dict):
         flag = 0  # All books or cds
         if "id" in response.keys():
             flag = 2  # Single book/cd
             name = list(response.keys())[0]  # key for Author/Creator/...
-
     return render_template('search_library.html', response=response, flag=flag, name=name)
 
 
@@ -94,8 +93,13 @@ def edit():
 @app.route("/delete/", methods=["GET"])
 def delete():
     api_url = request.args.get('url')
+    redirect_category = request.args.get('category')
     requests.delete(api_url, headers=api.headers)
-    return redirect(url_for('home'))
+    return redirect(f"/search-library/?url={api.url}/{redirect_category}")
+    # return redirect(url_for(redirect_category))
+
+
+# http://localhost:3000/search-library/?url=http://localhost:5000/cds
 
 
 if __name__ == "__main__":
