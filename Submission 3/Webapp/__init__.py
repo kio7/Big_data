@@ -51,6 +51,7 @@ def search_library():
 
 @app.route("/submit/", methods=["GET", "POST"])
 def submit():
+    # Get the corresponding parameters to the item.
     json = request.args.get('json')
     temp = re.split(r'\W+', json)
     lis = []
@@ -58,6 +59,7 @@ def submit():
         if e != '':
             lis.append(e)
 
+    # Create dynamic form based on parameters above.
     class EntryForm(FlaskForm):
         entry = StringField()
 
@@ -68,26 +70,69 @@ def submit():
 
     columns = [{"name": x} for x in lis]
     form = MyForm(field_list=columns)
-    for i in range(len(columns)):
-        form.field_list[i].entry.label = columns[i]['name']
 
+    # Create a new item.
     if form.validate_on_submit():
         api_url = request.args.get('url')
         data = {}
         for i in range(len(lis)):
-            data[form.field_list[i].entry.label] = form.field_list[i].data['entry']
+            data[lis[i]] = form.field_list[i].data['entry']
         
-        response = requests.post(api_url, json=data)
+        response = requests.post(api_url, json=data, headers=api.headers)
         if response.status_code == 201:
-            item = response.json()
-            print(f"Created item with ID: {item['id']}")
             return redirect(url_for('home'))
+
+    # Change labels
+    for i in range(len(columns)):
+        form.field_list[i].entry.label = columns[i]['name']
 
     return render_template("create.html", form=form)
 
+
 @app.route('/edit/', methods=["GET", "POST"])
 def edit():
-    return render_template('edit.html')
+    # Get the corresponding parameters to the item.
+    api_url = request.args.get('url')
+    json = request.args.get('json')
+    temp = re.split(r'\W+', json)
+    lis = []
+    for e in temp:
+        if e != '':
+            lis.append(e)
+
+    # Create dynamic form based on parameters above.
+    class EntryForm(FlaskForm):
+        entry = StringField()
+
+    class MyForm(FlaskForm):
+        """A form for one or more addresses"""
+        field_list = FieldList(FormField(EntryForm), min_entries=1)
+        submit = SubmitField("Save")
+
+    columns = [{"name": x} for x in lis]
+    form = MyForm(field_list=columns)
+
+    # Edit the existing item.
+    if form.validate_on_submit():
+        if request.args.get('id'):
+            id = request.args.get('id')
+            data = {}
+            for i in range(len(lis)):
+                data[lis[i]] = form.field_list[i].data['entry']
+            data['id'] = id
+
+            requests.put(api_url, json=data, headers=api.headers)
+            return redirect(f"/search-library/?url={api_url}")
+    
+    # Edit labels and default values
+    response = requests.get(api_url, headers=api.headers)
+    if response.status_code == 200:
+        data = response.json()
+        for i in range(len(columns)):
+            form.field_list[i].entry.label = columns[i]['name']
+            form.field_list[i].entry.data = data[columns[i]['name']]
+    
+    return render_template('edit.html', form=form)
 
 
 @app.route("/delete/", methods=["GET"])
@@ -96,10 +141,6 @@ def delete():
     redirect_category = request.args.get('category')
     requests.delete(api_url, headers=api.headers)
     return redirect(f"/search-library/?url={api.url}/{redirect_category}")
-    # return redirect(url_for(redirect_category))
-
-
-# http://localhost:3000/search-library/?url=http://localhost:5000/cds
 
 
 if __name__ == "__main__":
