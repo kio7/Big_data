@@ -1,0 +1,156 @@
+/* RESET */
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+body {
+    background: #000000;
+}    
+    /* background-image: url(../images/background.png);
+    /* background-size: auto 100%; */
+    /* background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center; */
+
+.backdrop {
+    z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(../images/background.png);
+    background-position: center;
+    background-size:cover;
+    background-repeat: no-repeat;
+    /* opacity: .5; */
+}
+
+
+a {
+    text-decoration: none;
+}
+
+.page_contents {
+    margin: 3rem auto 0 auto;
+    padding-bottom: 20rem;
+    display: block;
+    width: 100%;
+    /* border: 1px solid red; */
+}
+
+
+
+header {
+    position: fixed;
+    padding: 0.5rem;
+    top: 0;
+    width: 100%;
+    height: 3rem;
+    text-align: center;
+    background: #707070;
+    font-size: large;
+    font-weight: 900;
+}
+
+footer {
+    font-size: 0.7rem;
+    position: fixed;
+    padding: 0.5rem;
+    bottom: 0;
+    width: 100%;
+    background: #707070;
+    text-align: center;
+}
+
+h1 {
+    font-size: 1.2rem;
+}
+
+h2 {
+    font-size: 0.8rem;
+}
+
+.large-button {
+    display: block;
+    text-align: center;
+    margin-top: 0px;
+    border-bottom: 1px solid black;
+    padding: 0.5rem 0;
+    width: 100%;
+    background: #003b6e;
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.large-button:hover {
+    background: #1f5686;
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.small-button {
+    width: 5rem;
+    font-size: 0.7rem;
+    display:block;
+    text-align: center;
+    margin-top: 1px;
+    padding: 0.2rem 0;
+    background: #003b6e;
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.small-button:hover {
+    background: #1f5686;
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.library-list-item {
+    width: 100%;
+    background-color: bisque;
+    margin-top: 0px;
+    border-top: 1px solid black;
+    padding: 0.4rem 1rem 0.4rem 1rem;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 0;
+    margin: 0;
+}
+
+.category {
+    text-transform: uppercase;
+    font-size: 0.5rem;
+}
+
+.label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+header a {
+    text-decoration: none;
+    color: #000000;
+}
+header a:hover {
+    text-decoration: none;
+    color: #000000;
+}

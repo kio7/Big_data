@@ -19,7 +19,7 @@ cluster = Cluster(
     ),
 )
 
-session = cluster.connect('sag_netflix')
+session = cluster.connect('bigdata3and4')
 
 # row = session.execute("select release_version from system.local").one()
 # if row:

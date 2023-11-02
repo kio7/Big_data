@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 API_KEY = "982734876345987234876345"
 
+
 def api_key_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -13,7 +14,9 @@ def api_key_required(func):
         if api_key and api_key == API_KEY:
             return func(*args, **kwargs)
         return jsonify({"error": "Unauthorized"}), 401
+
     return wrapper
+
 
 # Sample data (replace with your actual data)
 books = [
@@ -41,29 +44,35 @@ cds = [
     {"id": 10, "title": "Hemispheres", "creator": "Rush", "status": 1}
 ]
 
+
 # Helper function to add HATEOAS links to a book
 def add_books_links(item):
     item["links"] = [
         {"rel": "books", "href": url_for("books_main", book_id=item["id"], _external=True), "method": "GET"},
     ]
 
+
 def add_book_links(item):
     item["links"] = [
         # {"rel": "books", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("books_main", book_id=item["id"], _external=True), "method": "DELETE"},
-        {"rel": "books", "href": url_for("books_main", book_id=item["id"], _external=True), "method": "PUT", "json": ["title", "author"]},
+        {"rel": "books", "href": url_for("books_main", book_id=item["id"], _external=True), "method": "PUT",
+         "json": ["title", "author"]},
     ]
+
 
 def add_cds_links(item):
     item["links"] = [
         {"rel": "cd", "href": url_for("cd_main", cd_id=item["id"], _external=True), "method": "GET"},
     ]
 
+
 def add_cd_links(item):
     item["links"] = [
         # {"rel": "cds", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("cd_main", cd_id=item["id"], _external=True), "method": "DELETE"},
-        {"rel": "cds", "href": url_for("cd_main", cd_id=item["id"], _external=True), "method": "PUT", "json": ["title", "creator"]}
+        {"rel": "cds", "href": url_for("cd_main", cd_id=item["id"], _external=True), "method": "PUT",
+         "json": ["title", "creator"]}
     ]
 
 
@@ -80,6 +89,7 @@ def root():
     ]
     return jsonify(links)
 
+
 @app.route("/all", methods=["GET"])
 @api_key_required
 def get_all():
@@ -89,11 +99,12 @@ def get_all():
         add_cds_links(cd)
 
     library = {
-        "books": books, 
+        "books": books,
         "cds": cds,
-        }
+    }
     # print(f"Library: \n -------- \n{jsonify(library)}")
     return jsonify(library)
+
 
 # BOOKS
 @app.route("/books", methods=["GET", "POST", "PUT", "DELETE"])
@@ -106,8 +117,8 @@ def books_main():
             if book:
                 add_book_links(book)
                 return jsonify(book)
-            return jsonify({"error": "Book not found"}), 404  
-        else: 
+            return jsonify({"error": "Book not found"}), 404
+        else:
             for book in books:
                 add_books_links(book)
             return jsonify(books)
@@ -120,7 +131,7 @@ def books_main():
             add_book_links(new_book)
             return jsonify(new_book), 201
         return jsonify({"error": "Invalid book data"}), 400
-    
+
     if request.method == "PUT":
         data = request.get_json()
         if request.args.get('book_id'):
@@ -140,6 +151,7 @@ def books_main():
                 books.remove(book)
                 return jsonify({"message": "Book deleted successfully"})
             return jsonify({"error": "Book not found"}), 404
+
 
 # CDS
 @app.route("/cds", methods=["GET", "POST", "PUT", "DELETE"])
@@ -164,10 +176,10 @@ def cd_main():
         if "title" in data and "creator" in data:
             new_cd = {"id": len(cds) + 1, "title": data["title"], "creator": data["creator"]}
             cds.append(new_cd)
-            add_book_links(new_cd)
+            add_cd_links(new_cd)
             return jsonify(new_cd), 201
         return jsonify({"error": "Invalid CD data"}), 400
-    
+
     if request.method == "PUT":
         data = request.get_json()
         if request.args.get("cd_id"):
@@ -179,7 +191,6 @@ def cd_main():
                 return jsonify(cd)
             return jsonify({"error": "CD not found or invalid data"}), 404
 
-
     if request.method == "DELETE":
         if request.args.get("cd_id"):
             cd_id = int(request.args.get("cd_id"))
@@ -188,7 +199,7 @@ def cd_main():
                 cds.remove(cd)
                 return jsonify({"message": "CD deleted successfully"})
             return jsonify({"error": "CD not found"}), 404
-    
+
 
 if __name__ == "__main__":
     app.run(debug=True)
