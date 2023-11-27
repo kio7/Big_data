@@ -10,16 +10,19 @@
 
 <div class="login-bg"></div>
 <div class="login">
-    <div class="login-container">
+    <div class="login-container text-center">
         <!-- <h3 class="text-center"><img src="{{ url_for('static', filename='images/logo.svg') }}" alt="" srcset=""></h3> -->
             <!-- <hr> -->
 
         <form class="" method="POST">
             {{form.csrf_token}}
-            <div class="form-group">
-                <label for="email">Api key</label>
-                {{ form.api_key(class="form-control custom") }} 
-
+            <div class="form-group" >
+                <p>{{form.user_name.label}}<br>
+                {{form.user_name(size=32)}}<br>
+                </p>
+                <p>{{form.password.label}}<br>
+                {{form.password(size=32)}}<br>
+                </p>
                 <div class="text-center">{{ form.submit(class="btn btn-lg btn-primary mt-3") }}</div>
             </div>
         </form>

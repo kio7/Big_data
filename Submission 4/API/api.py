@@ -5,11 +5,13 @@ from functools import wraps
 import sys
 
 sys.path.append('../../')
-from CassandraDB.connect_database import session
+sys.path.append('../')
+from CassandraDB.connect_database import c_session
 from cassandra.query import dict_factory
 
-session = session
-session.row_factory = dict_factory
+
+c_session = c_session
+c_session.row_factory = dict_factory
 app = Flask(__name__)
 
 API_KEY = "982734876345987234876345"
@@ -76,12 +78,12 @@ def root():
 @api_key_required
 def get_all():
 
-    books2 = session.execute(
+    books2 = c_session.execute(
         """
         SELECT * FROM books
         """
     )
-    cds2 = session.execute(
+    cds2 = c_session.execute(
         """
         SELECT * FROM cds
         """
@@ -110,13 +112,13 @@ def books_main():
     if request.method == "GET":
         if request.args.get('book_id'):
             book_id = int(request.args.get('book_id'))
-            book = session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
+            book = c_session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
             if book._current_rows:
                 add_book_links(book[0])
                 return jsonify(book[0])
             return jsonify({"error": "Book not found"}), 404
         else:
-            books2 = session.execute(
+            books2 = c_session.execute(
                 """
                 SELECT * FROM books
                 """
@@ -130,20 +132,20 @@ def books_main():
     if request.method == "POST":
         data = request.get_json()
         if "title" in data and "author" in data:
-            booksees = session.execute('SELECT * FROM books')
+            booksees = c_session.execute('SELECT * FROM books')
             booksees = list(booksees)
             if booksees:
                 booksees.sort(key=lambda x: x['item_id'])
                 book_id = booksees[-1]['item_id'] + 1
 
-            session.execute(
+            c_session.execute(
                 """
                 INSERT INTO books (id, item_id, title, author, status)
                 VALUES (%s,%s, %s, %s, %s)
                 """,
                 (uuid.uuid1(), book_id, data['title'], data['author'], 1)
             )
-            new_book = session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
+            new_book = c_session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
             add_book_links(new_book[0])
             return jsonify(new_book[0]), 201
         return jsonify({"error": "Invalid book data"}), 400
@@ -152,9 +154,9 @@ def books_main():
         data = request.get_json()
         if request.args.get('book_id'):
             book_id = int(request.args.get('book_id'))
-            book = session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
+            book = c_session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
             if book._current_rows and "title" in data and "author" in data:
-                session.execute(
+                c_session.execute(
                     """
                     UPDATE books SET title = %s, author = %s WHERE id = %s
                     """,
@@ -168,9 +170,9 @@ def books_main():
     if request.method == "DELETE":
         if request.args.get('book_id'):
             book_id = int(request.args.get('book_id'))
-            book = session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
+            book = c_session.execute('SELECT * FROM books WHERE item_id = %s ALLOW FILTERING', [book_id])
             if book._current_rows:
-                session.execute(
+                c_session.execute(
                     """
                     DELETE FROM books WHERE id = %s
                     """,
@@ -187,14 +189,14 @@ def cd_main():
     if request.method == "GET":
         if request.args.get("cd_id"):
             cd_id = int(request.args.get("cd_id"))
-            cd = session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
+            cd = c_session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
             if cd._current_rows:
                 add_cd_links(cd[0])
                 return jsonify(cd[0])
             return jsonify({"error": "CD not found"}), 404
 
         else:
-            cds2 = session.execute(
+            cds2 = c_session.execute(
                 """
                 SELECT * FROM cds
                 """
@@ -208,21 +210,21 @@ def cd_main():
     if request.method == "POST":
         data = request.get_json()
         if "title" in data and "creator" in data:
-            ceedees = session.execute('SELECT * FROM cds')
+            ceedees = c_session.execute('SELECT * FROM cds')
             ceedees = list(ceedees)
             if ceedees:
                 ceedees.sort(key=lambda x: x['item_id'])
                 cd_id = ceedees[-1]['item_id'] + 1
             else:
                 cd_id = 1
-            session.execute(
+            c_session.execute(
                 """
                 INSERT INTO cds (id, item_id, title, creator, status)
                 VALUES (%s,%s, %s, %s, %s)
                 """,
                 (uuid.uuid1(), cd_id, data['title'], data['creator'], 1)
             )
-            new_cd = session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
+            new_cd = c_session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
             add_cd_links(new_cd[0])
             return jsonify(new_cd[0]), 201
         return jsonify({"error": "Invalid CD data"}), 400
@@ -231,9 +233,9 @@ def cd_main():
         data = request.get_json()
         if request.args.get("cd_id"):
             cd_id = int(request.args.get("cd_id"))
-            cd = session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
+            cd = c_session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
             if cd._current_rows and "title" in data and "creator" in data:
-                session.execute(
+                c_session.execute(
                     """
                     UPDATE cds SET title = %s, creator = %s WHERE id = %s
                     """,
@@ -247,9 +249,9 @@ def cd_main():
     if request.method == "DELETE":
         if request.args.get("cd_id"):
             cd_id = int(request.args.get("cd_id"))
-            cd = session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
+            cd = c_session.execute('SELECT * FROM cds WHERE item_id = %s ALLOW FILTERING', [cd_id])
             if cd._current_rows:
-                session.execute(
+                c_session.execute(
                     """
                     DELETE FROM cds WHERE id = %s
                     """,
@@ -257,6 +259,7 @@ def cd_main():
                 )
                 return jsonify({"message": "CD deleted successfully"})
             return jsonify({"error": "CD not found"}), 404
+
 
 
 if __name__ == "__main__":

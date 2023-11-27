@@ -154,3 +154,9 @@ header a:hover {
     text-decoration: none;
     color: #000000;
 }
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

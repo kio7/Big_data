@@ -1,11 +1,19 @@
+import sys
+from functools import wraps
 from operator import itemgetter
 
-from flask import Flask, render_template, redirect, url_for, request
+import bcrypt
+from flask import Flask, render_template, redirect, url_for, request, session
 from flask_wtf import FlaskForm
-from wtforms import StringField, FieldList, FormField, SubmitField
+from wtforms import StringField, FieldList, FormField, SubmitField, PasswordField
 import re
 
+sys.path.append('../../')
+from CassandraDB.connect_database import c_session
 import requests
+from wtforms.validators import DataRequired
+
+c_session = c_session
 
 
 # To make the variables global.
@@ -23,12 +31,55 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "my super secret key"
 
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user_name"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 @app.route("/", methods=["GET"])
 def index():
-    return redirect(url_for("home"))
+    return redirect(url_for("login"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    class LoginForm(FlaskForm):
+        user_name = StringField('UserName', validators=[DataRequired()])
+        password = PasswordField('Password', validators=[DataRequired()])
+        submit = SubmitField('Sign In')
+
+    form = LoginForm()
+
+    if request.method == "POST":
+        username = request.form["user_name"]
+        password = request.form["password"]
+        bpw = bytes(password, 'utf-8')
+
+        password = c_session.execute('SELECT password FROM users WHERE name = %s ALLOW FILTERING', (username,))
+        if password:
+            if bcrypt.checkpw(bpw, password[0].password):
+                session["user_name"] = username
+                return redirect(url_for("home"))
+        else:
+            return render_template("login.html", error="Something went wrong. Please try again.", form=form)
+
+    return render_template("login.html", form=form)
+
+
+@app.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    session.pop("user_name", None)
+    return redirect(url_for("login"))
 
 
 @app.route("/home", methods=["GET"])
+@login_required
 def home():
     response = requests.get(api.url, headers=api.headers)
     if response.status_code == 200:
@@ -38,6 +89,7 @@ def home():
 
 
 @app.route("/search-library/", methods=["GET"])
+@login_required
 def search_library():
     flag = 1  # All Books and Cds
     name = None
@@ -58,6 +110,7 @@ def search_library():
 
 
 @app.route("/submit/", methods=["GET", "POST"])
+@login_required
 def submit():
     # Get the corresponding parameters to the item.
     json = request.args.get('json')
@@ -98,6 +151,7 @@ def submit():
 
 
 @app.route('/edit/', methods=["GET", "POST"])
+@login_required
 def edit():
     # Get the corresponding parameters to the item.
     api_url = request.args.get('url')
@@ -144,6 +198,7 @@ def edit():
 
 
 @app.route("/delete/", methods=["GET"])
+@login_required
 def delete():
     api_url = request.args.get('url')
     redirect_category = request.args.get('category')
