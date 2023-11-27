@@ -1,0 +1,6 @@
+cassandra_driver==3.28.0
+click==8.1.7
+Flask==3.0.0
+flask_wtf==1.2.1
+Requests==2.31.0
+WTForms==3.0.1

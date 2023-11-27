@@ -7,7 +7,7 @@
 <div class="page_contents">
 <a class="large-button" href="javascript:history.back()">Go Back</a>
 
-    <!-- All -->
+    <!-- All books AND cd´s -->
     {% if flag == 0 %}
         {% for key, category in response.items() %}
             {% for elem in category %}
@@ -15,7 +15,7 @@
                     <h1>{{ elem['id'] }}: {{ elem['title'] }}</h1>
                     
                     <div class="item-details">
-                        <div class="category">Category: {{ key }}</div>
+                        <div class="category">Categorys: {{ key }}</div>
                         <div>
                         {% for link in elem['links']%}
                             <a class="small-button" href="/search-library/?url={{ link['href'] }}">{{ link['method'] }}</a>
@@ -23,14 +23,13 @@
                         </div>
                     </div>
 
-
                 </div>
             {% endfor %}
         {% endfor %}
     {% endif %}
 
 
-    <!-- Category items -->
+    <!-- All books OR cd´s -->
     {% if flag == 1 %}
 
         {% for elem in response %}
@@ -51,7 +50,7 @@
 
 
     
-    <!-- Single item -->
+    <!-- Single books or cds -->
     {% if flag == 2 %}
         <div class="library-list-item">
             <!-- Title & Author/Creator -->
