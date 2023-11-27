@@ -6,17 +6,18 @@ import bcrypt
 from flask import Flask, render_template, redirect, url_for, request, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, FieldList, FormField, SubmitField, PasswordField
-import re
 
 sys.path.append('../../')
 from CassandraDB.connect_database import c_session
 import requests
+import re
 from wtforms.validators import DataRequired
 
 c_session = c_session
 
 
-# To make the variables global.
+# Global variables for API. This is not a good practice, but it is a simple way to make the variables
+# global without using a database or a config file.
 class ApiVariables:
     def __init__(self) -> None:
         self.url = "http://localhost:5000/"
@@ -27,25 +28,29 @@ class ApiVariables:
 
 
 api = ApiVariables()
+
+# Flask app
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "my super secret key"
 
-
-def login_required(f):
-    @wraps(f)
+# Wrapper function to check is user is logged in.
+def login_required(func):
+    @wraps(func)
     def decorated_function(*args, **kwargs):
-        if not session.get("user_name"):
+        if not session.get("user_name"): # if user is not logged in, redirect to login page
             return redirect(url_for("login"))
-        return f(*args, **kwargs)
+        return func(*args, **kwargs) # if user is logged in, continue
 
     return decorated_function
 
 
+# Flask routes -----------------------------------------------------------------------------------------------
 @app.route("/", methods=["GET"])
 def index():
     return redirect(url_for("login"))
 
 
+# Login
 @app.route("/login", methods=["GET", "POST"])
 def login():
     class LoginForm(FlaskForm):
@@ -71,6 +76,7 @@ def login():
     return render_template("login.html", form=form)
 
 
+# Logout
 @app.route("/logout", methods=["GET"])
 @login_required
 def logout():
@@ -78,6 +84,7 @@ def logout():
     return redirect(url_for("login"))
 
 
+# Home
 @app.route("/home", methods=["GET"])
 @login_required
 def home():
@@ -88,27 +95,35 @@ def home():
     return render_template("home.html", data={"error": response.status_code, "": response.url})
 
 
+# Collective route for all GET methods for books and cds.
 @app.route("/search-library/", methods=["GET"])
 @login_required
 def search_library():
+
     flag = 1  # All Books and Cds
     name = None
     api_url = request.args.get('url')
     response = requests.get(api_url, headers=api.headers).json()
+
     if isinstance(response, dict):
         flag = 0  # All books or cds
+
         if "item_id" in response.keys():
             flag = 2  # Single book/cd
             name = list(response.keys())[0]  # key for Author/Creator/...
+
         elif "books" in response.keys():
             sorted_response = {"books": sorted(response["books"], key=itemgetter("item_id")),
                                "cds": sorted(response["cds"], key=itemgetter("item_id"))}
             response = sorted_response
+
     if isinstance(response, list):
         response.sort(key=itemgetter("item_id"))
+
     return render_template('search_library.html', response=response, flag=flag, name=name)
 
 
+# Create a new book or cd.
 @app.route("/submit/", methods=["GET", "POST"])
 @login_required
 def submit():
@@ -150,6 +165,7 @@ def submit():
     return render_template("create.html", form=form)
 
 
+# Edit an existing book or cd.
 @app.route('/edit/', methods=["GET", "POST"])
 @login_required
 def edit():
@@ -197,6 +213,7 @@ def edit():
     return render_template('edit.html', form=form)
 
 
+# Delete an existing book or cd.
 @app.route("/delete/", methods=["GET"])
 @login_required
 def delete():

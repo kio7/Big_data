@@ -2,8 +2,8 @@
 {% block title %}Home{% endblock %}
 {% block body %}
 
-<!-- <div class="page_heading">Root</div> -->
 <div class="page_contents">
+    <!-- Menu items based on contents from HATEOAS api. -->
     {% for elem in data %}
         {% if elem['method'] == "GET" %}
             <a class="large-button" href="/search-library/?url={{ elem['href'] }}">List {{ elem['rel'] }}</a>

@@ -139,6 +139,7 @@ def edit():
     return render_template('edit.html', form=form)
 
 
+# Delete an existing book or cd.
 @app.route("/delete/", methods=["GET"])
 def delete():
     api_url = request.args.get('url')

@@ -16,12 +16,12 @@ app = Flask(__name__)
 
 API_KEY = "982734876345987234876345"
 
-
+# Wrapper function to check for API key in header
 def api_key_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         api_key = request.headers.get("Authorization")
-        # if api_key and api_key == f"ApiKey {API_KEY}":
+        
         if api_key and api_key == API_KEY:
             return func(*args, **kwargs)
         return jsonify({"error": "Unauthorized"}), 401
@@ -38,7 +38,6 @@ def add_books_links(item):
 
 def add_book_links(item):
     item["links"] = [
-        # {"rel": "books", "href": url_for("get_book", book_id=item["id"], _external=True), "method": "GET"},
         {"rel": "books", "href": url_for("books_main", book_id=item["item_id"], _external=True), "method": "DELETE"},
         {"rel": "books", "href": url_for("books_main", book_id=item["item_id"], _external=True), "method": "PUT",
          "json": ["title", "author"]},
@@ -53,13 +52,13 @@ def add_cds_links(item):
 
 def add_cd_links(item):
     item["links"] = [
-        # {"rel": "cds", "href": url_for("get_cd", cd_id=item["id"], _external=True), "method": "GET"},
         {"rel": "cds", "href": url_for("cd_main", cd_id=item["item_id"], _external=True), "method": "DELETE"},
         {"rel": "cds", "href": url_for("cd_main", cd_id=item["item_id"], _external=True), "method": "PUT",
          "json": ["title", "creator"]}
     ]
 
 
+# Flask routes
 @app.route("/", methods=["GET"])
 @api_key_required
 def root():
@@ -73,7 +72,7 @@ def root():
     ]
     return jsonify(links)
 
-
+# Get all books and cds
 @app.route("/all", methods=["GET"])
 @api_key_required
 def get_all():
@@ -105,7 +104,7 @@ def get_all():
     return jsonify(library)
 
 
-# BOOKS
+# BOOKS CRUD
 @app.route("/books", methods=["GET", "POST", "PUT", "DELETE"])
 @api_key_required
 def books_main():
@@ -182,7 +181,7 @@ def books_main():
             return jsonify({"error": "Book not found"}), 404
 
 
-# CDS
+# CDS CRUD
 @app.route("/cds", methods=["GET", "POST", "PUT", "DELETE"])
 @api_key_required
 def cd_main():

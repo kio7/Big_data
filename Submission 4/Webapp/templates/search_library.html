@@ -7,7 +7,7 @@
 <div class="page_contents">
 <a class="large-button" href="javascript:history.back()">Go Back</a>
 
-    <!-- All -->
+    <!-- All books AND cd's -->
     {% if flag == 0 %}
         {% for key, category in response.items() %}
             {% for elem in category %}
@@ -30,7 +30,7 @@
     {% endif %}
 
 
-    <!-- Category items -->
+    <!-- All books OR cd's -->
     {% if flag == 1 %}
 
         {% for elem in response %}
@@ -51,7 +51,7 @@
 
 
     
-    <!-- Single item -->
+    <!-- Single book or cd -->
     {% if flag == 2 %}
         <div class="library-list-item">
             <!-- Title & Author/Creator -->

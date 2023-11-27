@@ -11,11 +11,11 @@
             {{ form.csrf_token() }}
 
             {% for i in range(form.field_list|length) %}
-            {{ form.field_list[i].hidden_tag() }}
-            {# Flask-WTF needs `hidden_tag()` so CSRF works for each form #}
-            
-            <label for="entry">{{ form.field_list[i].entry.label }}</label>
-            {{ form.field_list[i].entry(class="form-control") }} <br>
+                {# Flask-WTF needs `hidden_tag()` so CSRF works for each form #}
+                {{ form.field_list[i].hidden_tag() }}
+                
+                <label for="entry">{{ form.field_list[i].entry.label }}</label>
+                {{ form.field_list[i].entry(class="form-control") }} <br>
             {% endfor %}
 
             {{ form.submit(class="rounded-0 btn btn-success btn-primary btn-lgbtn-block") }}
